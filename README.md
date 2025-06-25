@@ -42,7 +42,7 @@ Check out the live deployed version:
 ```bash
 git clone https://github.com/SujalAgrawal08/DocBrief.git
 cd DocBrief
-pip install -r requirements.txt
+pip install -r requirement.txt
 python app.py
 cd Frontend
 npm install
