@@ -32,9 +32,9 @@ Check out the live deployed version:
 
 ## 📸 Screenshots
 
-![Dashboard Preview](./assets/dashboard.png)
-![Project Preview](./assets/editor.png)
-
+![Dashboard Preview](./assets/HomePage.png)
+![Project Preview](./assets/Work1.png)
+![Project Preview](./assets/Work2.png)
 
 ## 📦 Getting Started
 
