@@ -49,4 +49,10 @@ npm install
 npm run dev
 ```
 
+## ✨ Future Enhancements
+- 🔒 OAuth & Google Sign-In
+- ☁️ Cloud storage for uploaded files
+- 📊 Summary analytics dashboard
+- 📚 Multi-document summarization
 
+Made with ❤️ by Sujal Agrawal
