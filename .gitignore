@@ -1,0 +1,26 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+.env
+.venv/
+venv/
+*.log
+*.sqlite3
+db.sqlite3
+
+# === Vite (Node.js Frontend) ===
+node_modules/
+dist/
+.env
+*.log
+
+# === OS/System Files ===
+.DS_Store
+Thumbs.db
+
+# === VS Code Settings (Optional) ===
+.vscode/
