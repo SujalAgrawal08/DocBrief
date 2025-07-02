@@ -1,20 +1,28 @@
-# Use Python image
+# Use slim Python base
 FROM python:3.10-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy requirements
-COPY requirements.txt .
+# Install system dependencies required by pytesseract, pdfplumber, etc.
+RUN apt-get update && apt-get install -y \
+    poppler-utils \
+    tesseract-ocr \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
+# Install Python dependencies
+COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy the rest of the app
+# Copy application code
 COPY . .
 
-# Expose port
+# Expose port used by Gunicorn
 EXPOSE 8000
 
-# Run the app with Gunicorn
+# Command to run the app
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
