@@ -1,10 +1,11 @@
 # Backend framework
 Flask==2.3.2
 Flask-Cors==4.0.0
+requests==2.31.0
 
 # Hugging Face Transformers for summarization
 transformers==4.40.1
-torch==2.2.2
+torch==2.7.1
 
 # NLP Tools
 spacy==3.7.2
