@@ -15,17 +15,11 @@ const Chatbot = () => {
     setChatInput("");
 
     try {
-      const response = await axios.post(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBQx6Sm-xZbIkGQwVGbKrIDv40U_fJCiNU`,
-        {
-          contents: [{ role: "user", parts: [{ text: chatInput }] }],
-        },
-        { headers: { "Content-Type": "application/json" } }
-      );
+      const response = await axios.post("http://localhost:5000/chatbot", {
+        chatInput,
+      });
+      const botResponse = response?.data?.reply || "No response from AI.";
 
-      const botResponse =
-        response?.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "No response from AI.";
       const botMessage = { sender: "bot", text: botResponse };
       setChatHistory((prev) => [...prev, botMessage]);
     } catch (error) {

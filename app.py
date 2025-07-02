@@ -8,11 +8,15 @@ import os
 import spacy
 import nltk
 import numpy as np
+import requests
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 nltk.download("punkt")
 nltk.download('punkt_tab')
 from nltk.tokenize import sent_tokenize
+from dotenv import load_dotenv
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}) 
@@ -40,6 +44,33 @@ def extract_key_clauses(text):
 @app.route('/')
 def home():
     return "AI-Powered Legal Document Analyzer is running!"
+
+@app.route('/chatbot', methods=['POST', 'OPTIONS'])
+def chatbot():
+    if request.method == 'OPTIONS':
+        return _cors_preflight_response()
+
+    data = request.get_json()
+    chat_input = data.get("chatInput", "")
+    if not chat_input:
+        return jsonify({"error": "No input provided"}), 400
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "contents": [{"role": "user", "parts": [{"text": chat_input}]}]
+    }
+
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+        result = response.json()
+        reply = result.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "No reply from Gemini.")
+        return jsonify({"reply": reply})
+    except Exception as e:
+        print("Gemini API error:", e)
+        return jsonify({"error": "Gemini API request failed"}), 500
+
 
 @app.route('/summarize', methods=['POST', 'OPTIONS'])
 def summarize_text():

@@ -1,0 +1,27 @@
+# Backend framework
+Flask==2.3.2
+Flask-Cors==4.0.0
+
+# Hugging Face Transformers for summarization
+transformers==4.40.1
+torch==2.2.2
+
+# NLP Tools
+spacy==3.7.2
+nltk==3.8.1
+scikit-learn==1.4.2
+
+# PDF and OCR
+pdfplumber==0.10.3
+pytesseract==0.3.10
+Pillow==10.3.0
+
+# Utility
+numpy==1.26.4
+regex==2024.5.15
+
+# Optional: For environment variable support
+python-dotenv==1.0.1
+
+# Required for production hosting
+gunicorn==21.2.0
