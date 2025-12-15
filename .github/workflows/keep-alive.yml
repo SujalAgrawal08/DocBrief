@@ -1,0 +1,26 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every day (Safe buffer before 7 days)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allows you to run this manually from the Actions tab for testing
+
+jobs:
+  ping_supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake up Supabase
+        run: |
+          # We request just 1 row (limit=1) to minimize load, but enough to wake the DB
+          response=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/documents?select=id&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}")
+          
+          echo "Supabase responded with status: $response"
+          
+          if [ "$response" -ne 200 ]; then
+            echo "Failed to wake up Supabase"
+            exit 1
+          fi
