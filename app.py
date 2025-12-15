@@ -7,7 +7,8 @@ import os
 import json
 from dotenv import load_dotenv
 from groq import Groq
-
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 load_dotenv()
 
 # Initialize Groq Client
@@ -16,7 +17,12 @@ client = Groq(api_key=GROQ_API_KEY)
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
-
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -120,6 +126,7 @@ def extract_text():
     return jsonify({"text": extracted_text})
 
 @app.route('/analyze_document', methods=['POST'])
+@limiter.limit("10 per minute")
 def analyze_document():
     data = request.get_json()
     text = data.get("text", "")
@@ -146,6 +153,7 @@ def analyze_document():
     return jsonify(MOCK_DATA)
 
 @app.route('/chatbot', methods=['POST'])
+@limiter.limit("20 per minute")
 def chatbot():
     data = request.get_json()
     chat_input = data.get("chatInput", "")
@@ -166,6 +174,10 @@ def chatbot():
         print(f"Chatbot Error: {e}")
         
     return jsonify({"reply": reply})
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify({"error": "Rate limit exceeded. Please wait a moment."}), 429
 
 @app.route('/compare_documents', methods=['POST'])
 def compare_documents():
