@@ -15,8 +15,10 @@ import {
   Instagram,
   Facebook,
 } from "lucide-react";
-
+import LS from "./components/LS";
 import Work from "./components/Work";
+import History from "./components/History";
+import SharedReport from "./components/SharedReport"
 
 function HomePage() {
   const navigate = useNavigate();
@@ -264,7 +266,10 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LS />} />
       <Route path="/work" element={<Work />} />
+      <Route path="/history" element={<History />} />
+      <Route path="/report/:id" element={<SharedReport />} />
     </Routes>
   );
 }

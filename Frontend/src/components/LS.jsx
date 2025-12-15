@@ -1,14 +1,17 @@
 import { useState } from "react";
-import axios from "axios";
+import { supabase } from "../supabaseClient"; // Import the client
+import { useNavigate } from "react-router-dom"; // For redirecting after login
 
 const LS = () => {
   const [isActive, setIsActive] = useState(false);
   const [formData, setFormData] = useState({
-    username: "",
+    username: "", // We will treat this as 'Display Name' if needed, or ignore for Auth
     email: "",
     password: "",
   });
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,19 +20,35 @@ const LS = () => {
   const handleSubmit = async (e, isLogin) => {
     e.preventDefault();
     setMessage("");
+    setLoading(true);
 
-    const endpoint = isLogin ? "/login" : "/register";
     try {
-      const response = await axios.post(
-        `http://localhost:5000${endpoint}`,
-        formData
-      );
-      setMessage(response.data.message);
-      if (isLogin && response.data.access_token) {
-        localStorage.setItem("token", response.data.access_token);
+      if (isLogin) {
+        // --- LOGIN LOGIC ---
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: formData.username, // Using the 'username' field input for Email
+          password: formData.password,
+        });
+
+        if (error) throw error;
+        
+        // Success! Redirect to Workspace
+        navigate("/work"); 
+      } else {
+        // --- SIGNUP LOGIC ---
+        const { data, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (error) throw error;
+
+        setMessage("Success! Check your email for the confirmation link.");
       }
     } catch (error) {
-      setMessage(error.response?.data?.error || "Something went wrong");
+      setMessage(error.message || "Authentication failed.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,17 +66,18 @@ const LS = () => {
       >
         <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
         <form onSubmit={(e) => handleSubmit(e, true)}>
+          {/* We use the 'username' input field for Email to match your CSS/Layout, but treat it as email */}
           <div className="mb-4 relative">
             <input
-              type="text"
+              type="email" // Changed to email type for validation
               name="username"
               value={formData.username}
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200"
             />
-            <label className="absolute left-4 top-2 text-gray-500">
-              Username
+            <label className="absolute left-4 top-2 text-gray-500 text-xs bg-white px-1 -mt-2">
+              Email
             </label>
           </div>
           <div className="mb-4 relative">
@@ -69,24 +89,28 @@ const LS = () => {
               required
               className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200"
             />
-            <label className="absolute left-4 top-2 text-gray-500">
+            <label className="absolute left-4 top-2 text-gray-500 text-xs bg-white px-1 -mt-2">
               Password
             </label>
           </div>
           <button
             type="submit"
-            className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            disabled={loading}
+            className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300 transition"
           >
-            Login
+            {loading ? "Verifying..." : "Login"}
           </button>
           <p
-            className="mt-4 text-center text-gray-600 cursor-pointer"
-            onClick={() => setIsActive(true)}
+            className="mt-4 text-center text-gray-600 cursor-pointer hover:text-blue-500"
+            onClick={() => {
+                setMessage("");
+                setIsActive(true);
+            }}
           >
             Don't have an account?{" "}
-            <span className="text-blue-500">Sign Up</span>
+            <span className="text-blue-500 font-bold">Sign Up</span>
           </p>
-          {message && <p className="text-red-500 mt-2">{message}</p>}
+          {message && <div className="mt-3 p-2 bg-red-50 text-red-600 text-sm rounded text-center">{message}</div>}
         </form>
       </div>
 
@@ -107,8 +131,8 @@ const LS = () => {
               required
               className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200"
             />
-            <label className="absolute left-4 top-2 text-gray-500">
-              Username
+            <label className="absolute left-4 top-2 text-gray-500 text-xs bg-white px-1 -mt-2">
+              Username (Optional)
             </label>
           </div>
           <div className="mb-4 relative">
@@ -120,7 +144,7 @@ const LS = () => {
               required
               className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200"
             />
-            <label className="absolute left-4 top-2 text-gray-500">Email</label>
+            <label className="absolute left-4 top-2 text-gray-500 text-xs bg-white px-1 -mt-2">Email</label>
           </div>
           <div className="mb-4 relative">
             <input
@@ -131,24 +155,28 @@ const LS = () => {
               required
               className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200"
             />
-            <label className="absolute left-4 top-2 text-gray-500">
+            <label className="absolute left-4 top-2 text-gray-500 text-xs bg-white px-1 -mt-2">
               Password
             </label>
           </div>
           <button
             type="submit"
-            className="w-full py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+            disabled={loading}
+            className="w-full py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-green-300 transition"
           >
-            Sign Up
+            {loading ? "Creating Account..." : "Sign Up"}
           </button>
           <p
-            className="mt-4 text-center text-gray-600 cursor-pointer"
-            onClick={() => setIsActive(false)}
+            className="mt-4 text-center text-gray-600 cursor-pointer hover:text-green-500"
+            onClick={() => {
+                setMessage("");
+                setIsActive(false);
+            }}
           >
             Already have an account?{" "}
-            <span className="text-green-500">Login</span>
+            <span className="text-green-500 font-bold">Login</span>
           </p>
-          {message && <p className="text-red-500 mt-2">{message}</p>}
+          {message && <div className="mt-3 p-2 bg-blue-50 text-blue-600 text-sm rounded text-center">{message}</div>}
         </form>
       </div>
     </div>
