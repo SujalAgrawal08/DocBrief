@@ -7,3 +7,4 @@ gunicorn
 groq
 flask-limiter
 werkzeug
+pdfplumber
