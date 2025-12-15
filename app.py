@@ -1,12 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import pdfplumber
-import pytesseract
-from PIL import Image
+from groq import Groq
 import os
 import json
-from dotenv import load_dotenv
-from groq import Groq
+from werkzeug.utils import secure_filename
+from PyPDF2 import PdfReader
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 load_dotenv()
