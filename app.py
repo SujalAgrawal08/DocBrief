@@ -63,8 +63,8 @@ def analyze_with_groq(text):
     Structure:
     {{
       "summary": "200 word summary...",
-      "key_clauses": ["clause 1", "clause 2", "clause 3"],
-      "obligations": ["obligation 1", "obligation 2"],
+      "key_clauses": ["Return a list of ALL critical legal clauses found (e.g., Termination, Liability, Confidentiality, Dispute Resolution)"],
+      "obligations": ["obligation 1", "obligation 2", ...],
       "actions": [
          {{"title": "Event Name", "date": "YYYY-MM-DD", "description": "Brief details"}}
       ]

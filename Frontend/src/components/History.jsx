@@ -9,7 +9,7 @@ import {
   Calendar,
   ChevronRight,
   Shield,
-  Zap
+  Zap,
 } from "lucide-react";
 import DocumentModal from "./DocumentModal";
 import AnalyticsWidget from "./AnalyticsWidget";
@@ -39,7 +39,9 @@ const History = () => {
 
   const fetchHistory = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         navigate("/login");
         return;
@@ -63,7 +65,8 @@ const History = () => {
 
   const handleDelete = async (e, id) => {
     e.stopPropagation();
-    if (!window.confirm("Delete this document? This action cannot be undone.")) return;
+    if (!window.confirm("Delete this document? This action cannot be undone."))
+      return;
 
     try {
       const { error } = await supabase.from("documents").delete().eq("id", id);
@@ -75,11 +78,24 @@ const History = () => {
       console.error("Delete failed:", error);
     }
   };
+  const handleDocUpdate = (updatedDoc) => {
+    const updateList = (list) =>
+      list.map((d) => (d.id === updatedDoc.id ? { ...d, ...updatedDoc } : d));
+
+    setDocuments((prev) => updateList(prev));
+    setFilteredDocs((prev) => updateList(prev));
+
+    setSelectedDoc((prev) => ({ ...prev, ...updatedDoc }));
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 font-sans text-slate-900">
       {selectedDoc && (
-        <DocumentModal doc={selectedDoc} onClose={() => setSelectedDoc(null)} />
+        <DocumentModal
+          doc={selectedDoc}
+          onClose={() => setSelectedDoc(null)}
+          onUpdate={handleDocUpdate} 
+        />
       )}
 
       <div className="max-w-7xl mx-auto">
@@ -93,7 +109,9 @@ const History = () => {
               <ArrowLeft className="w-4 h-4 mr-1" />
               Back to Workspace
             </button>
-            <h1 className="text-2xl font-bold text-slate-900">Document History</h1>
+            <h1 className="text-2xl font-bold text-slate-900">
+              Document History
+            </h1>
           </div>
 
           {/* Search Bar - Clean & Minimal */}
@@ -163,13 +181,19 @@ const History = () => {
                         <FileText className="w-5 h-5 text-slate-500 group-hover:text-purple-600 transition-colors" />
                       </div>
                       <div className="min-w-0">
-                         <h3 className="font-semibold text-slate-900 text-base truncate pr-2" title={doc.file_name}>
+                        <h3
+                          className="font-semibold text-slate-900 text-base truncate pr-2"
+                          title={doc.file_name}
+                        >
                           {doc.file_name || "Untitled"}
                         </h3>
                         <p className="text-xs text-slate-400 flex items-center mt-0.5">
-                          {new Date(doc.created_at).toLocaleDateString()} 
-                          <span className="mx-1.5">•</span> 
-                          {new Date(doc.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                          {new Date(doc.created_at).toLocaleDateString()}
+                          <span className="mx-1.5">•</span>
+                          {new Date(doc.created_at).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </p>
                       </div>
                     </div>
@@ -185,13 +209,15 @@ const History = () => {
                     {doc.actions?.length > 0 && (
                       <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
                         <Calendar className="w-3 h-3 mr-1" />
-                        {doc.actions.length} Action{doc.actions.length !== 1 ? 's' : ''}
+                        {doc.actions.length} Action
+                        {doc.actions.length !== 1 ? "s" : ""}
                       </span>
                     )}
                     {doc.key_clauses?.length > 0 && (
                       <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
                         <Shield className="w-3 h-3 mr-1" />
-                        {doc.key_clauses.length} Clause{doc.key_clauses.length !== 1 ? 's' : ''}
+                        {doc.key_clauses.length} Clause
+                        {doc.key_clauses.length !== 1 ? "s" : ""}
                       </span>
                     )}
                     {doc.comparison_data && (
@@ -207,7 +233,7 @@ const History = () => {
                   <span className="text-xs font-medium text-purple-600 flex items-center group-hover:underline">
                     View Report <ChevronRight className="w-3 h-3 ml-1" />
                   </span>
-                  
+
                   <button
                     onClick={(e) => handleDelete(e, doc.id)}
                     className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"

@@ -3,14 +3,17 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import {
   Brain,
   ArrowRight,
-  CheckCircle2,
-  Shield,
   Zap,
+  Shield,
+  Users,
   Github,
   Twitter,
   Mail,
-  Users,
-  LogIn // Imported Icon
+  LogIn,
+  Target,
+  Code2,
+  Heart,
+  Linkedin
 } from "lucide-react";
 import LS from "./components/LS";
 import Work from "./components/Work";
@@ -38,7 +41,6 @@ function HomePage() {
           </div>
 
           <div className="flex md:order-2 space-x-3 md:space-x-4 rtl:space-x-reverse items-center">
-            {/* NEW LOGIN BUTTON */}
             <button
               onClick={() => navigate("/login")}
               className="hidden md:flex items-center gap-2 text-slate-600 hover:text-purple-600 font-medium transition-colors"
@@ -47,7 +49,7 @@ function HomePage() {
             </button>
             
             <button
-              onClick={() => navigate("/login")} // Changed to /login for 'Get Started' too, to ensure auth
+              onClick={() => navigate("/login")}
               className="px-6 py-2.5 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:outline-none focus:ring-purple-300 rounded-full text-center transition-all shadow-lg shadow-purple-200 hover:shadow-purple-400 hover:-translate-y-0.5"
             >
               Get Started Free
@@ -189,8 +191,97 @@ function HomePage() {
         </div>
       </section>
 
+      {/* --- NEW SECTION: MISSION --- */}
+      <section id="mission" className="py-24 bg-slate-900 text-white relative overflow-hidden">
+        {/* Background blobs for visual interest */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 translate-y-1/2"></div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="flex flex-col md:flex-row items-center gap-16">
+            <div className="w-full md:w-1/2">
+               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-900/50 border border-purple-500/30 text-purple-300 text-sm font-semibold mb-6">
+                 <Target className="w-4 h-4" /> Our Mission
+               </div>
+               <h2 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
+                 Democratizing Document Intelligence
+               </h2>
+               <p className="text-slate-300 text-lg leading-relaxed mb-6">
+                 We believe that understanding complex documents shouldn't require a law degree or hours of tedious reading. 
+               </p>
+               <p className="text-slate-300 text-lg leading-relaxed">
+                 DocBrief exists to bridge the gap between information overload and actionable insight. By leveraging state-of-the-art AI, we empower students, professionals, and researchers to work smarter, not harder.
+               </p>
+            </div>
+            <div className="w-full md:w-1/2">
+               <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10">
+                     <h3 className="text-4xl font-bold text-purple-400 mb-2">10k+</h3>
+                     <p className="text-slate-400">Pages Processed</p>
+                  </div>
+                  <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10 mt-8">
+                     <h3 className="text-4xl font-bold text-indigo-400 mb-2">99%</h3>
+                     <p className="text-slate-400">Accuracy Rate</p>
+                  </div>
+                  <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10">
+                     <h3 className="text-4xl font-bold text-pink-400 mb-2">500+</h3>
+                     <p className="text-slate-400">Hours Saved</p>
+                  </div>
+                  <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10 mt-8">
+                     <h3 className="text-4xl font-bold text-green-400 mb-2">24/7</h3>
+                     <p className="text-slate-400">Availability</p>
+                  </div>
+               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- NEW SECTION: ABOUT --- */}
+      <section id="about" className="py-24 bg-white">
+        <div className="container mx-auto px-6">
+           <div className="max-w-3xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Built for Builders, by Builders</h2>
+              <p className="text-lg text-slate-600 mb-12 leading-relaxed">
+                DocBrief started as a simple idea: "Why can't I just ask my PDF a question?" 
+                It has since evolved into a comprehensive analysis suite designed to handle everything from legal contracts to technical whitepapers.
+              </p>
+           </div>
+
+           <div className="grid md:grid-cols-3 gap-8 mt-12">
+              <div className="text-center p-6">
+                 <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Code2 className="w-8 h-8 text-slate-700" />
+                 </div>
+                 <h3 className="text-xl font-bold text-slate-900 mb-2">Modern Tech Stack</h3>
+                 <p className="text-slate-500">
+                    Built with React, Supabase, and Large Language Models to ensure speed and reliability.
+                 </p>
+              </div>
+              <div className="text-center p-6">
+                 <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Shield className="w-8 h-8 text-slate-700" />
+                 </div>
+                 <h3 className="text-xl font-bold text-slate-900 mb-2">Privacy First</h3>
+                 <p className="text-slate-500">
+                    Your data is yours. We use Row Level Security (RLS) to ensure your documents remain private.
+                 </p>
+              </div>
+              <div className="text-center p-6">
+                 <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Heart className="w-8 h-8 text-slate-700" />
+                 </div>
+                 <h3 className="text-xl font-bold text-slate-900 mb-2">Open Innovation</h3>
+                 <p className="text-slate-500">
+                    Constantly evolving with new features like "Smart Actions" and "Comparison Mode" based on user feedback.
+                 </p>
+              </div>
+           </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-100 py-12">
+      <footer className="bg-slate-50 border-t border-slate-200 py-12">
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
             <Brain className="h-6 w-6 text-purple-600" />
@@ -200,13 +291,13 @@ function HomePage() {
             © 2025 DocBrief. Built for productivity.
           </div>
           <div className="flex gap-6">
-            <a href="#" className="text-slate-400 hover:text-purple-600 transition">
+            <a href="https://github.com/SujalAgrawal08/DocBrief" className="text-slate-400 hover:text-purple-600 transition">
               <Github className="w-5 h-5" />
             </a>
-            <a href="#" className="text-slate-400 hover:text-purple-600 transition">
-              <Twitter className="w-5 h-5" />
+            <a href="https://www.linkedin.com/in/sujalagrawal08" className="text-slate-400 hover:text-purple-600 transition">
+              <Linkedin className="w-5 h-5" />
             </a>
-            <a href="#" className="text-slate-400 hover:text-purple-600 transition">
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=agrawalsujal08@gmail.com" className="text-slate-400 hover:text-purple-600 transition">
               <Mail className="w-5 h-5" />
             </a>
           </div>
