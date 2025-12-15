@@ -2,8 +2,8 @@ flask
 flask-cors
 python-dotenv
 requests
-pdfplumber
-pytesseract
-Pillow
+PyPDF2
 gunicorn
 groq
+flask-limiter
+werkzeug
