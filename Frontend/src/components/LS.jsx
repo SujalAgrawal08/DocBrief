@@ -1,183 +1,165 @@
 import { useState } from "react";
-import { supabase } from "../supabaseClient"; // Import the client
-import { useNavigate } from "react-router-dom"; // For redirecting after login
+import { supabase } from "../supabaseClient";
+import { useNavigate } from "react-router-dom";
+import { Brain, ArrowLeft, Mail, Lock, User } from "lucide-react";
 
 const LS = () => {
-  const [isActive, setIsActive] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    username: "", // We will treat this as 'Display Name' if needed, or ignore for Auth
     email: "",
     password: "",
+    username: "",
   });
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
-  const handleSubmit = async (e, isLogin) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
     setLoading(true);
+    setMessage("");
 
     try {
       if (isLogin) {
-        // --- LOGIN LOGIC ---
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: formData.username, // Using the 'username' field input for Email
-          password: formData.password,
-        });
-
-        if (error) throw error;
-        
-        // Success! Redirect to Workspace
-        navigate("/work"); 
-      } else {
-        // --- SIGNUP LOGIC ---
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         });
-
         if (error) throw error;
-
-        setMessage("Success! Check your email for the confirmation link.");
+        navigate("/work");
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+        });
+        if (error) throw error;
+        setMessage("Check your email for the confirmation link!");
       }
-    } catch (error) {
-      setMessage(error.message || "Authentication failed.");
+    } catch (err) {
+      setMessage(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      className={`relative flex flex-col items-center justify-center h-screen bg-gray-100 transition-all duration-500 ${
-        isActive ? "bg-blue-200" : "bg-white"
-      }`}
-    >
-      {/* Login Form */}
-      <div
-        className={`absolute w-96 p-6 bg-white rounded-lg shadow-lg transition-all duration-500 ${
-          isActive ? "-translate-x-full opacity-0" : "opacity-100"
-        }`}
-      >
-        <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
-        <form onSubmit={(e) => handleSubmit(e, true)}>
-          {/* We use the 'username' input field for Email to match your CSS/Layout, but treat it as email */}
-          <div className="mb-4 relative">
-            <input
-              type="email" // Changed to email type for validation
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200"
-            />
-            <label className="absolute left-4 top-2 text-gray-500 text-xs bg-white px-1 -mt-2">
-              Email
-            </label>
+    <div className="min-h-screen flex bg-white">
+      {/* Left Side - Hero Image (Hidden on mobile) */}
+      <div className="hidden lg:flex lg:w-1/2 bg-purple-600 relative overflow-hidden items-center justify-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-indigo-800 opacity-90"></div>
+        <img
+          src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"
+          alt="Abstract Background"
+          className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-20"
+        />
+        <div className="relative z-10 text-white p-12 max-w-lg">
+          <div className="mb-6 bg-white/20 w-16 h-16 rounded-2xl flex items-center justify-center backdrop-blur-md">
+            <Brain className="w-8 h-8 text-white" />
           </div>
-          <div className="mb-4 relative">
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200"
-            />
-            <label className="absolute left-4 top-2 text-gray-500 text-xs bg-white px-1 -mt-2">
-              Password
-            </label>
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300 transition"
-          >
-            {loading ? "Verifying..." : "Login"}
-          </button>
-          <p
-            className="mt-4 text-center text-gray-600 cursor-pointer hover:text-blue-500"
-            onClick={() => {
-                setMessage("");
-                setIsActive(true);
-            }}
-          >
-            Don't have an account?{" "}
-            <span className="text-blue-500 font-bold">Sign Up</span>
+          <h2 className="text-4xl font-bold mb-6">Welcome to DocBrief</h2>
+          <p className="text-purple-100 text-lg leading-relaxed">
+            Join thousands of professionals who save hours every week by letting
+            AI handle their document reading.
           </p>
-          {message && <div className="mt-3 p-2 bg-red-50 text-red-600 text-sm rounded text-center">{message}</div>}
-        </form>
+        </div>
       </div>
 
-      {/* Register Form */}
-      <div
-        className={`absolute w-96 p-6 bg-white rounded-lg shadow-lg transition-all duration-500 ${
-          isActive ? "opacity-100" : "translate-x-full opacity-0"
-        }`}
-      >
-        <h2 className="text-2xl font-bold text-center mb-4">Sign Up</h2>
-        <form onSubmit={(e) => handleSubmit(e, false)}>
-          <div className="mb-4 relative">
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200"
-            />
-            <label className="absolute left-4 top-2 text-gray-500 text-xs bg-white px-1 -mt-2">
-              Username (Optional)
-            </label>
-          </div>
-          <div className="mb-4 relative">
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200"
-            />
-            <label className="absolute left-4 top-2 text-gray-500 text-xs bg-white px-1 -mt-2">Email</label>
-          </div>
-          <div className="mb-4 relative">
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200"
-            />
-            <label className="absolute left-4 top-2 text-gray-500 text-xs bg-white px-1 -mt-2">
-              Password
-            </label>
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-green-300 transition"
-          >
-            {loading ? "Creating Account..." : "Sign Up"}
-          </button>
-          <p
-            className="mt-4 text-center text-gray-600 cursor-pointer hover:text-green-500"
-            onClick={() => {
-                setMessage("");
-                setIsActive(false);
-            }}
-          >
-            Already have an account?{" "}
-            <span className="text-green-500 font-bold">Login</span>
+      {/* Right Side - Form */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center p-8 sm:p-20 relative">
+        <button
+          onClick={() => navigate("/")}
+          className="absolute top-8 left-8 text-slate-500 hover:text-purple-600 flex items-center gap-2 transition"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Home
+        </button>
+
+        <div className="max-w-md w-full mx-auto">
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">
+            {isLogin ? "Welcome Back" : "Create Account"}
+          </h1>
+          <p className="text-slate-500 mb-8">
+            {isLogin
+              ? "Enter your credentials to access your workspace."
+              : "Get started with your free account today."}
           </p>
-          {message && <div className="mt-3 p-2 bg-blue-50 text-blue-600 text-sm rounded text-center">{message}</div>}
-        </form>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {!isLogin && (
+              <div className="relative">
+                <User className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
+                <input
+                  name="username"
+                  type="text"
+                  placeholder="Full Name"
+                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                  onChange={handleChange}
+                />
+              </div>
+            )}
+
+            <div className="relative">
+              <Mail className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
+              <input
+                name="email"
+                type="email"
+                placeholder="Email Address"
+                required
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="relative">
+              <Lock className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
+              <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                required
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                onChange={handleChange}
+              />
+            </div>
+
+            {message && (
+              <div
+                className={`p-3 rounded-lg text-sm ${
+                  message.includes("Check")
+                    ? "bg-green-50 text-green-600"
+                    : "bg-red-50 text-red-600"
+                }`}
+              >
+                {message}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-purple-200 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {loading ? "Processing..." : isLogin ? "Sign In" : "Sign Up"}
+            </button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <p className="text-slate-600">
+              {isLogin ? "Don't have an account?" : "Already have an account?"}
+              <button
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setMessage("");
+                }}
+                className="ml-2 text-purple-600 font-semibold hover:underline"
+              >
+                {isLogin ? "Sign Up" : "Sign In"}
+              </button>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

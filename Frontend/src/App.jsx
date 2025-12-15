@@ -2,204 +2,187 @@ import React from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import {
   Brain,
-  Code,
+  ArrowRight,
+  CheckCircle2,
+  Shield,
   Zap,
-  ChevronRight,
   Github,
   Twitter,
-  MapPin,
-  Phone,
   Mail,
-  ScrollText,
-  Blocks,
-  Instagram,
-  Facebook,
+  Users,
+  LogIn // Imported Icon
 } from "lucide-react";
 import LS from "./components/LS";
 import Work from "./components/Work";
 import History from "./components/History";
-import SharedReport from "./components/SharedReport"
+import SharedReport from "./components/SharedReport";
 
 function HomePage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      {/* Navigation */}
-      <nav className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Brain className="h-8 w-8 text-purple-600" />
-            <span
-              className="text-xl font-bold cursor-pointer"
-              onClick={() => navigate("/")}
-            >
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-purple-100 selection:text-purple-900">
+      {/* 1. Navbar with Login Button */}
+      <nav className="fixed w-full z-50 top-0 start-0 border-b border-white/20 bg-white/80 backdrop-blur-md transition-all">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between px-6 py-4">
+          <div
+            className="flex items-center gap-2 cursor-pointer group"
+            onClick={() => navigate("/")}
+          >
+            <div className="bg-purple-600 p-2 rounded-lg group-hover:bg-purple-700 transition-colors">
+              <Brain className="h-6 w-6 text-white" />
+            </div>
+            <span className="self-center text-2xl font-bold whitespace-nowrap text-slate-800 tracking-tight">
               DocBrief
             </span>
           </div>
-          <div className="hidden md:flex items-center space-x-8">
-            <a
-              href="#features"
-              className="text-gray-600 hover:text-purple-600 transition-colors"
-            >
-              Features
-            </a>
-            <a
-              href="#about"
-              className="text-gray-600 hover:text-purple-600 transition-colors"
-            >
-              About
-            </a>
-            <a
-              href="#contact"
-              className="text-gray-600 hover:text-purple-600 transition-colors"
-            >
-              Contact
-            </a>
+
+          <div className="flex md:order-2 space-x-3 md:space-x-4 rtl:space-x-reverse items-center">
+            {/* NEW LOGIN BUTTON */}
             <button
-              onClick={() => navigate("/work")}
-              className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors"
+              onClick={() => navigate("/login")}
+              className="hidden md:flex items-center gap-2 text-slate-600 hover:text-purple-600 font-medium transition-colors"
             >
-              Get Started
+              <LogIn className="w-4 h-4" /> Login
             </button>
+            
+            <button
+              onClick={() => navigate("/login")} // Changed to /login for 'Get Started' too, to ensure auth
+              className="px-6 py-2.5 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:outline-none focus:ring-purple-300 rounded-full text-center transition-all shadow-lg shadow-purple-200 hover:shadow-purple-400 hover:-translate-y-0.5"
+            >
+              Get Started Free
+            </button>
+          </div>
+
+          <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
+            <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-transparent">
+              {["Features", "Mission", "About"].map((item) => (
+                <li key={item}>
+                  <a
+                    href={`#${item.toLowerCase()}`}
+                    className="block py-2 px-3 text-slate-600 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-purple-600 md:p-0 transition-colors"
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-6 py-16 md:py-24">
-        <div className="flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-12 md:mb-0">
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">
-              AI-Powered Summarization for Smarter Insights
-            </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              Transforming lengthy documents into concise, meaningful summaries
-              with cutting-edge AI for faster and more efficient information
-              processing.
-            </p>
-            <div className="flex space-x-4">
-              <button
-                onClick={() => navigate("/work")}
-                className="bg-purple-600 text-white px-8 py-3 rounded-full hover:bg-purple-700 transition-colors flex items-center"
-              >
-                Get Started <ChevronRight className="ml-2 h-5 w-5" />
-              </button>
-              <button
-                id="about"
-                className="border-2 border-purple-600 text-purple-600 px-8 py-3 rounded-full hover:bg-purple-50 transition-colors cursor-pointer"
-                onClick={() =>
-                  document
-                    .getElementById("about")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                Learn More
-              </button>
+      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
+        <div className="absolute top-0 right-0 -z-10 opacity-30 translate-x-1/3 -translate-y-1/4">
+          <div className="w-[600px] h-[600px] bg-purple-300 rounded-full blur-3xl filter mix-blend-multiply"></div>
+        </div>
+        <div className="absolute bottom-0 left-0 -z-10 opacity-30 -translate-x-1/3 translate-y-1/4">
+          <div className="w-[500px] h-[500px] bg-indigo-300 rounded-full blur-3xl filter mix-blend-multiply"></div>
+        </div>
+
+        <div className="container mx-auto px-6 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-50 border border-purple-100 text-purple-700 text-sm font-semibold mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-600"></span>
+            </span>
+            v2.0 Now Live: Smart Action Extraction
+          </div>
+
+          <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight mb-8 max-w-4xl mx-auto leading-tight">
+            Turn Lengthy Docs into <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600">
+              Actionable Insights
+            </span>
+          </h1>
+
+          <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Stop drowning in PDFs. DocBrief uses advanced AI to summarize,
+            extract deadlines, and answer questions about your documents in
+            seconds.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              onClick={() => navigate("/login")}
+              className="w-full sm:w-auto px-8 py-4 text-lg font-semibold text-white bg-slate-900 rounded-full hover:bg-slate-800 transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-2"
+            >
+              Try DocBrief Now <ArrowRight className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() =>
+                document
+                  .getElementById("features")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="w-full sm:w-auto px-8 py-4 text-lg font-semibold text-slate-700 bg-white border border-slate-200 rounded-full hover:bg-slate-50 transition-all"
+            >
+              How it Works
+            </button>
+          </div>
+
+          <div className="mt-16 relative mx-auto max-w-5xl">
+            <div className="rounded-2xl bg-slate-900 p-2 shadow-2xl ring-1 ring-slate-900/10">
+              <img
+                src="https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?auto=format&fit=crop&q=80&w=2000"
+                alt="App Dashboard"
+                className="rounded-xl shadow-inner opacity-90"
+              />
             </div>
           </div>
-          <div className="md:w-1/2">
-            <img
-              src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800"
-              alt="AI Technology"
-              className="rounded-lg shadow-2xl"
-            />
-          </div>
         </div>
       </section>
 
-      {/* About us */}
-      <section id="about" className="container mx-auto px-6 py-16 md:py-24">
-        <div className="flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2">
-            <img
-              src="https://images.unsplash.com/photo-1674027444485-cec3da58eef4?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="AI Technology"
-              className="rounded-lg shadow-2xl"
-            />
-          </div>
-          <div className="ml-4 md:w-1/2 mb-12 md:mb-0">
-            <h2 className="text-3xl font-bold text-center mb-1.5">About Us</h2>
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">
-              Transforming Documents into Meaningful Summaries
-            </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              At DocBrief, we revolutionize the way you interact with
-              information. Our AI-powered platform extracts key insights from
-              lengthy documents, providing concise and accurate summaries in
-              seconds. DocBrief is designed to provide a futuristic, efficient,
-              and intuitive summarization experience. Stay ahead with smart
-              document insights—because every word matters.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Our Mission */}
-
-      <section className="container mx-auto px-6 py-16 md:py-24">
-        <div className="flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-12 md:mb-0">
-            <h2 className="text-4xl font-bold text-center mb-1.5">
-              Our Mission
-            </h2>
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">
-              Simplifying Information, Enhancing Productivity
-            </h1>
-            <p className="text-xl text-gray-600 mb-8 mr-2">
-              We are committed to making information processing seamless and
-              efficient. Lengthy, non-machine-readable documents often slow down
-              productivity, making it difficult to extract key insights. Our
-              AI-powered platform transforms these documents into concise,
-              structured summaries, ensuring faster access to essential
-              information. By leveraging advanced NLP, we help professionals,
-              students, and researchers save time and focus on what truly
-              matters—understanding and utilizing knowledge effectively.
-            </p>
-          </div>
-          <div className="md:w-1/2">
-            <img
-              src="https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&h=420&w=800"
-              alt="AI Technology"
-              className="rounded-lg shadow-2xl"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="bg-white py-16">
+      {/* Features Grid */}
+      <section id="features" className="py-24 bg-slate-50">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Why Choose Us
-          </h2>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Everything you need to digest content faster
+            </h2>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              Our powerful AI pipeline handles the heavy lifting so you can focus
+              on decision making.
+            </p>
+          </div>
+
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-              <Zap className="h-12 w-12 text-purple-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">
-                Time-Saving Efficiency{" "}
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+                <Zap className="w-6 h-6 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
+                Instant Summaries
               </h3>
-              <p className="text-gray-600">
-                Quickly grasp essential points without sifting through pages.
+              <p className="text-slate-600 leading-relaxed">
+                Paste text or upload a PDF. Get a concise, bulleted executive
+                summary that captures the core message without the fluff.
               </p>
             </div>
-            <div className="p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-              <ScrollText className="h-12 w-12 text-purple-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">
-                AI-Driven Analysis & Summarization
+
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1">
+              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-6">
+                <Shield className="w-6 h-6 text-indigo-600" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
+                Legal & Technical Analysis
               </h3>
-              <p className="text-gray-600">
-                Leverage advanced natural language processing for precise
-                results.
+              <p className="text-slate-600 leading-relaxed">
+                Specifically tuned to identify key clauses, obligations, and
+                technical specifications that generic tools often miss.
               </p>
             </div>
-            <div className="p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-              <Code className="h-12 w-12 text-purple-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">
-                Intelligent AI Chatbot
+
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1">
+              <div className="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center mb-6">
+                <Users className="w-6 h-6 text-pink-600" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
+                Collaborative History
               </h3>
-              <p className="text-gray-600">
-                Instant answers and document insights.
+              <p className="text-slate-600 leading-relaxed">
+                Keep a secure archive of all your analyses. Share reports with
+                teammates via secure, generated links.
               </p>
             </div>
           </div>
@@ -207,54 +190,25 @@ function HomePage() {
       </section>
 
       {/* Footer */}
-
-      <footer id="contact" className="bg-gray-50 py-12">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            {/* Branding Section */}
-            <div className="flex items-center space-x-2 mb-6 md:mb-0">
-              <Brain className="h-6 w-6 text-purple-600" />
-              <span className="text-lg font-semibold text-gray-800">
-                DocBrief
-              </span>
-            </div>
-
-            {/* Contact Information */}
-            <div className="flex flex-col items-center md:items-start space-y-2 text-gray-600 mt-5">
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-5 w-5 text-purple-600" />
-                <span>123 AI Street, Tech City, 45678</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Phone className="h-5 w-5 text-purple-600" />
-                <span>+1 (123) 456-7890</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Mail className="h-5 w-5 text-purple-600" />
-                <span>contact@docbrief.com</span>
-              </div>
-            </div>
-
-            {/* Social Media Links */}
-            <div className="flex space-x-6 mt-6 md:mt-0">
-              <a
-                href="#"
-                className="text-gray-600 hover:text-purple-600 transition-colors"
-              >
-                <Github className="h-6 w-6" />
-              </a>
-              <a
-                href="#"
-                className="text-gray-600 hover:text-purple-600 transition-colors"
-              >
-                <Instagram className="h-6 w-6" />
-              </a>
-            </div>
+      <footer className="bg-white border-t border-slate-100 py-12">
+        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-2">
+            <Brain className="h-6 w-6 text-purple-600" />
+            <span className="font-bold text-slate-800 text-lg">DocBrief</span>
           </div>
-
-          {/* Copyright Section */}
-          <div className="mt-10 text-center text-gray-500">
-            © 2025 DocBrief. All rights reserved.
+          <div className="text-slate-500 text-sm">
+            © 2025 DocBrief. Built for productivity.
+          </div>
+          <div className="flex gap-6">
+            <a href="#" className="text-slate-400 hover:text-purple-600 transition">
+              <Github className="w-5 h-5" />
+            </a>
+            <a href="#" className="text-slate-400 hover:text-purple-600 transition">
+              <Twitter className="w-5 h-5" />
+            </a>
+            <a href="#" className="text-slate-400 hover:text-purple-600 transition">
+              <Mail className="w-5 h-5" />
+            </a>
           </div>
         </div>
       </footer>

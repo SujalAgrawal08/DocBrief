@@ -1,15 +1,25 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import { X, Send } from "lucide-react";
+import { X, Send, Bot, User, Sparkles } from "lucide-react";
 
-// 1. Accept 'context' as a prop
 const Chatbot = ({ context }) => {
   const [chatInput, setChatInput] = useState("");
   const [chatHistory, setChatHistory] = useState([
-    // Optional: Add an initial greeting
-    { sender: "bot", text: "Hi! Ask me anything about your document." }
+    {
+      sender: "bot",
+      text: "Hello! I've analyzed your document. What specific details are you looking for?",
+    },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatHistory]);
 
   const handleChatSubmit = async (e) => {
     e.preventDefault();
@@ -21,20 +31,17 @@ const Chatbot = ({ context }) => {
     setIsLoading(true);
 
     try {
-      // 2. Send both 'chatInput' AND 'context' to the backend
       const response = await axios.post("http://localhost:5000/chatbot", {
         chatInput: userMessage.text,
-        context: context || "" // Send empty string if no file uploaded
+        context: context || "",
       });
 
-      const botResponse = response?.data?.reply || "No response from AI.";
-      
+      const botResponse = response?.data?.reply || "I couldn't generate a response.";
       setChatHistory((prev) => [...prev, { sender: "bot", text: botResponse }]);
     } catch (error) {
-      console.error("Chatbot request failed:", error);
       setChatHistory((prev) => [
         ...prev,
-        { sender: "bot", text: "Error: Unable to fetch response. Please try again." },
+        { sender: "bot", text: "Connection error. Please try again." },
       ]);
     } finally {
       setIsLoading(false);
@@ -42,54 +49,91 @@ const Chatbot = ({ context }) => {
   };
 
   return (
-    <div className="fixed bottom-20 right-6 w-80 bg-white shadow-2xl border border-gray-300 rounded-2xl overflow-hidden z-50">
-      {/* Chat Header */}
-      <div className="flex justify-between items-center bg-purple-600 text-white p-3">
-        <h3 className="text-lg font-semibold">DocBrief Assistant</h3>
-        {/* We generally want the close button to be handled by the parent, but for now this is fine */}
+    <div className="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] bg-white shadow-2xl rounded-2xl overflow-hidden z-50 flex flex-col border border-slate-100 animate-in slide-in-from-bottom-5 duration-300">
+      {/* Header */}
+      <div className="bg-slate-900 p-4 flex items-center gap-3">
+        <div className="bg-purple-500 p-1.5 rounded-lg">
+          <Bot className="w-5 h-5 text-white" />
+        </div>
+        <div>
+          <h3 className="text-white font-bold text-sm">DocBrief Assistant</h3>
+          <p className="text-slate-400 text-xs flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            Online & Ready
+          </p>
+        </div>
       </div>
 
-      {/* Chat Messages */}
-      <div className="h-64 overflow-y-auto p-3 bg-gray-50 flex flex-col gap-2">
+      {/* Messages Area */}
+      <div className="h-80 overflow-y-auto p-4 bg-slate-50 flex flex-col gap-4">
         {chatHistory.map((msg, index) => (
           <div
             key={index}
-            className={`p-2 max-w-[80%] rounded-lg text-sm ${
-              msg.sender === "user"
-                ? "bg-purple-500 text-white self-end ml-auto rounded-br-none"
-                : "bg-gray-200 text-black self-start rounded-bl-none"
+            className={`flex gap-3 ${
+              msg.sender === "user" ? "flex-row-reverse" : "flex-row"
             }`}
           >
-            {msg.text}
+            {/* Avatar */}
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                msg.sender === "user" ? "bg-purple-100" : "bg-slate-200"
+              }`}
+            >
+              {msg.sender === "user" ? (
+                <User className="w-4 h-4 text-purple-600" />
+              ) : (
+                <Sparkles className="w-4 h-4 text-slate-600" />
+              )}
+            </div>
+
+            {/* Bubble */}
+            <div
+              className={`p-3 rounded-2xl text-sm leading-relaxed max-w-[80%] shadow-sm ${
+                msg.sender === "user"
+                  ? "bg-purple-600 text-white rounded-tr-none"
+                  : "bg-white text-slate-700 border border-slate-100 rounded-tl-none"
+              }`}
+            >
+              {msg.text}
+            </div>
           </div>
         ))}
-        {/* Loading Indicator */}
         {isLoading && (
-          <div className="self-start bg-gray-200 text-black p-2 rounded-lg rounded-bl-none text-sm animate-pulse">
-            Thinking...
+          <div className="flex gap-3">
+             <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
+                <Sparkles className="w-4 h-4 text-slate-600" />
+             </div>
+             <div className="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-100 shadow-sm">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-75"></div>
+                  <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-150"></div>
+                </div>
+             </div>
           </div>
         )}
+        <div ref={messagesEndRef} />
       </div>
 
-      {/* Chat Input */}
-      <form onSubmit={handleChatSubmit} className="flex p-2 border-t bg-white">
-        <input
-          type="text"
-          value={chatInput}
-          onChange={(e) => setChatInput(e.target.value)}
-          placeholder="Ask about the document..."
-          className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          disabled={isLoading}
-        />
-        <button
-          type="submit"
-          disabled={isLoading}
-          className={`text-white p-2 ml-2 rounded-lg transition-colors ${
-            isLoading ? "bg-purple-400 cursor-not-allowed" : "bg-purple-600 hover:bg-purple-700"
-          }`}
-        >
-          <Send className="w-5 h-5" />
-        </button>
+      {/* Input Area */}
+      <form onSubmit={handleChatSubmit} className="p-3 bg-white border-t border-slate-100">
+        <div className="relative">
+          <input
+            type="text"
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            placeholder="Ask a question..."
+            className="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all text-sm"
+            disabled={isLoading}
+          />
+          <button
+            type="submit"
+            disabled={isLoading || !chatInput.trim()}
+            className="absolute right-2 top-2 p-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <Send className="w-4 h-4" />
+          </button>
+        </div>
       </form>
     </div>
   );
