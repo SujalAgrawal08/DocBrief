@@ -8,3 +8,5 @@ groq
 flask-limiter
 werkzeug
 packaging==24.2
+pytesseract
+Pillow

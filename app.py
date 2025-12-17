@@ -9,6 +9,9 @@ from PyPDF2 import PdfReader
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from io import BytesIO
+
+from PIL import Image  # <--- NEW
+import pytesseract     # <--- NEW
 load_dotenv()
 
 # Initialize Groq Client
@@ -114,23 +117,33 @@ def extract_text():
 
         # 1. Handle PDF
         if file_ext == '.pdf':
-            # PyPDF2 reads from the file stream directly
             reader = PdfReader(file)
             for page in reader.pages:
                 page_text = page.extract_text()
                 if page_text:
                     text += page_text + "\n"
         
-        # 2. Handle Text Files
+        # 2. Handle Images (OCR) - NOW SUPPORTED
+        elif file_ext in ['.png', '.jpg', '.jpeg', '.tiff']:
+            try:
+                # Load image from memory
+                image = Image.open(file)
+                # Extract text
+                text = pytesseract.image_to_string(image)
+            except Exception as e:
+                print(f"OCR Error: {e}")
+                return jsonify({"error": "Failed to process image. Ensure it is clear."}), 400
+
+        # 3. Handle Text Files
         elif file_ext == '.txt':
             text = file.read().decode('utf-8', errors='ignore')
             
-        # 3. Handle Unsupported (Images/Docx removed for stability)
         else:
-            return jsonify({"error": "Unsupported file format. Please upload PDF or TXT."}), 400
+            return jsonify({"error": "Unsupported file format."}), 400
 
+        # Final check
         if not text.strip():
-            return jsonify({"error": "Could not extract text. The file might be empty or scanned image."}), 400
+            return jsonify({"error": "No text found. If this is a scanned PDF, try converting to Image first."}), 400
 
         return jsonify({"text": text})
 
