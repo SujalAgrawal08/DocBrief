@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from io import BytesIO
 load_dotenv()
 
 # Initialize Groq Client
@@ -100,29 +101,42 @@ def analyze_with_groq(text):
 @app.route('/extract_text', methods=['POST'])
 def extract_text():
     if 'file' not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
-
+        return jsonify({"error": "No file part"}), 400
+    
     file = request.files['file']
-    filename = os.path.join(UPLOAD_FOLDER, file.filename)
-    file.save(filename)
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
 
-    extracted_text = ""
     try:
-        if file.filename.lower().endswith('.pdf'):
-            with pdfplumber.open(filename) as pdf:
-                extracted_text = "\n".join([page.extract_text() or "" for page in pdf.pages])
-        elif file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
-            image = Image.open(filename)
-            extracted_text = pytesseract.image_to_string(image)
-        else:
-            return jsonify({"error": "Unsupported file type"}), 400
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    finally:
-        if os.path.exists(filename):
-            os.remove(filename)
+        filename = secure_filename(file.filename)
+        file_ext = os.path.splitext(filename)[1].lower()
+        text = ""
 
-    return jsonify({"text": extracted_text})
+        # 1. Handle PDF
+        if file_ext == '.pdf':
+            # PyPDF2 reads from the file stream directly
+            reader = PdfReader(file)
+            for page in reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
+        
+        # 2. Handle Text Files
+        elif file_ext == '.txt':
+            text = file.read().decode('utf-8', errors='ignore')
+            
+        # 3. Handle Unsupported (Images/Docx removed for stability)
+        else:
+            return jsonify({"error": "Unsupported file format. Please upload PDF or TXT."}), 400
+
+        if not text.strip():
+            return jsonify({"error": "Could not extract text. The file might be empty or scanned image."}), 400
+
+        return jsonify({"text": text})
+
+    except Exception as e:
+        print(f"Error extracting text: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/analyze_document', methods=['POST'])
 @limiter.limit("10 per minute")
