@@ -3,6 +3,7 @@ from flask_cors import CORS
 from groq import Groq
 import os
 import json
+from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
 from flask_limiter import Limiter
