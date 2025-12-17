@@ -21,4 +21,4 @@ COPY . .
 EXPOSE 5000
 
 # 7. Start the application
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+CMD gunicorn --workers 1 --threads 8 --timeout 120 --bind 0.0.0.0:$PORT app:app

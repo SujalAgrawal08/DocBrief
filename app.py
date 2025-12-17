@@ -128,7 +128,16 @@ def extract_text():
             try:
                 # Load image from memory
                 image = Image.open(file)
-                # Extract text
+                # Convert to RGB (fixes issues with some PNGs)
+                if image.mode != 'RGB':
+                    image = image.convert('RGB')
+                
+                # Resize if image is huge (limit to 1800px max dimension)
+                # This drastically reduces RAM usage and processing time
+                max_dimension = 1800
+                if max(image.size) > max_dimension:
+                    image.thumbnail((max_dimension, max_dimension), Image.Resampling.LANCZOS)
+                    
                 text = pytesseract.image_to_string(image)
             except Exception as e:
                 print(f"OCR Error: {e}")
