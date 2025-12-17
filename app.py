@@ -128,17 +128,22 @@ def extract_text():
             try:
                 # Load image from memory
                 image = Image.open(file)
-                # Convert to RGB (fixes issues with some PNGs)
-                if image.mode != 'RGB':
-                    image = image.convert('RGB')
+                # OPTIMIZATION A: Convert to Grayscale (L) immediately
+                # This discards color info, making the image 3x lighter to process
+                image = image.convert('L')
                 
-                # Resize if image is huge (limit to 1800px max dimension)
-                # This drastically reduces RAM usage and processing time
-                max_dimension = 1800
+                # OPTIMIZATION B: Aggressive Resizing
+                # 1200px is usually the "sweet spot" for speed vs. accuracy on free tiers
+                max_dimension = 1200
                 if max(image.size) > max_dimension:
                     image.thumbnail((max_dimension, max_dimension), Image.Resampling.LANCZOS)
-                    
-                text = pytesseract.image_to_string(image)
+                
+                # OPTIMIZATION C: Tesseract Config
+                # --psm 3: Default auto-segmentation (robust)
+                # OMP_THREAD_LIMIT=1: (Implicit in Dockerfile) prevents CPU thrashing
+                custom_config = r'--psm 3'
+
+                text = pytesseract.image_to_string(image, config=custom_config)
             except Exception as e:
                 print(f"OCR Error: {e}")
                 return jsonify({"error": "Failed to process image. Ensure it is clear."}), 400
