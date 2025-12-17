@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { X, Send, Bot, User, Sparkles } from "lucide-react";
+import { API_BASE_URL } from "../apiConfig";
 
 const Chatbot = ({ context }) => {
   const [chatInput, setChatInput] = useState("");
@@ -31,7 +32,7 @@ const Chatbot = ({ context }) => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/chatbot", {
+      const response = await axios.post(`${API_BASE_URL}/chatbot`, {
         chatInput: userMessage.text,
         context: context || "",
       });

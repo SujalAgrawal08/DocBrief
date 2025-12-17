@@ -23,6 +23,8 @@ import {
 import Chatbot from "./chatbot";
 import { jsPDF } from "jspdf";
 import { Download } from "lucide-react";
+import { API_BASE_URL } from "../apiConfig";
+
 function Work() {
   // --- STATE MANAGEMENT ---
   const [file, setFile] = useState(null);
@@ -208,7 +210,7 @@ function Work() {
     const formData = new FormData();
     formData.append("file", uploadedFile);
     try {
-      const response = await fetch("http://localhost:5000/extract_text", {
+      const response = await fetch(`${API_BASE_URL}/extract_text`, {
         method: "POST",
         body: formData,
       });
@@ -228,7 +230,7 @@ function Work() {
     }
     setIsProcessing(true);
     try {
-      const response = await fetch("http://localhost:5000/compare_documents", {
+      const response = await fetch(`${API_BASE_URL}/compare_documents`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text1, text2 }),
@@ -257,7 +259,7 @@ function Work() {
     formData.append("file", file);
 
     try {
-      const textResponse = await fetch("http://localhost:5000/extract_text", {
+      const textResponse = await fetch(`${API_BASE_URL}/extract_text`, {
         method: "POST",
         body: formData,
       });
@@ -271,7 +273,7 @@ function Work() {
 
       if (extracted && extracted !== "No text extracted") {
         const analyzeResponse = await fetch(
-          "http://localhost:5000/analyze_document",
+          `${API_BASE_URL}/analyze_document`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
