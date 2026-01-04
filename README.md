@@ -4,18 +4,22 @@
 
 ### Transform Documents into Actionable Intelligence
 
-[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Python](https://img.shields.io/badge/python-3.9+-blue?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![Docker](https://img.shields.io/badge/docker-ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Vite](https://img.shields.io/badge/Vite-7c3aed?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Python](https://img.shields.io/badge/Python_3.9+-7c3aed?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Docker](https://img.shields.io/badge/Docker-7c3aed?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-7c3aed?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
 A production-grade AI SaaS application that transforms lengthy PDFs, text files, and scanned images into structured insights using **Generative AI (RAG)** and **Optical Character Recognition (OCR)**.
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Now-blueviolet?style=for-the-badge)](https://docbrief.vercel.app)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Site-a855f7?style=for-the-badge)](https://docbrief.vercel.app)
+[![Report Bug](https://img.shields.io/badge/🐛_Report-Bug-6d28d9?style=for-the-badge)](../../issues)
+[![Request Feature](https://img.shields.io/badge/✨_Request-Feature-8b5cf6?style=for-the-badge)](../../issues)
 
 ---
 
 <img src="https://drive.google.com/uc?export=view&id=11NqyCVURUYpX25ZfIvHY0Zn6sMvVSk3N" alt="DocBrief Dashboard" width="80%"/>
+
+<br/><br/>
 
 <img src="https://drive.google.com/uc?export=view&id=1JkB1nQCvZvCBFTLvL_diYTH8TGLp8OdN" alt="Login Page" width="80%"/>
 
