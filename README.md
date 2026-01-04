@@ -126,12 +126,10 @@ DocBrief/
 │   │   └── supabaseClient.js
 │   └── package.json
 │
-├── backend/ (Root for Render)
-│   ├── app.py (Main Flask Application)
-│   ├── Dockerfile (Container Config)
-│   ├── requirements.txt (Python Dependencies)
-│   └── .env (Secrets - Not committed)
-│
+│── app.py (Main Flask Application)
+│── Dockerfile (Container Config)
+│── requirements.txt (Python Dependencies)
+│── .env (Secrets - Not committed)
 └── .github/workflows/
     └── keep-alive.yml (Automation)
 ```
