@@ -134,7 +134,4 @@ DocBrief/
 <div align="center">
 Built with ❤️ by Sujal Agrawal
 
-GitHub stars
-Twitter Follow
-
-</div> ```
+</div> 
