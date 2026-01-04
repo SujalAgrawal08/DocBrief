@@ -1,6 +1,6 @@
 <div align="center">
   
-# 📘 DocBrief v2.0 – Technical Documentation
+# 📘 DocBrief
 
 DocBrief is a production-grade AI SaaS application designed to streamline document analysis. It transforms lengthy PDFs, text files, and scanned images into structured insights using Generative AI (RAG) and Optical Character Recognition (OCR).
 
