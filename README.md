@@ -130,3 +130,11 @@ DocBrief/
 └── .github/workflows/
     └── keep-alive.yml (Automation)
 ```
+
+<div align="center">
+Built with ❤️ by Sujal Agrawal
+
+GitHub stars
+Twitter Follow
+
+</div> ```
