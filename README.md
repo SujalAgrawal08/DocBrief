@@ -15,8 +15,9 @@ A production-grade AI SaaS application that transforms lengthy PDFs, text files,
 
 ---
 
-<img src="https://drive.google.com/file/d/11NqyCVURUYpX25ZfIvHY0Zn6sMvVSk3N/view?usp=sharing" alt="DocBrief Dashboard" width="80%"/>
-<img src="https://drive.google.com/file/d/1JkB1nQCvZvCBFTLvL_diYTH8TGLp8OdN/view?usp=sharing" alt="Login Page" width="80%"/>
+<img src="https://drive.google.com/uc?export=view&id=11NqyCVURUYpX25ZfIvHY0Zn6sMvVSk3N" alt="DocBrief Dashboard" width="80%"/>
+
+<img src="https://drive.google.com/uc?export=view&id=1JkB1nQCvZvCBFTLvL_diYTH8TGLp8OdN" alt="Login Page" width="80%"/>
 
 </div>
 
