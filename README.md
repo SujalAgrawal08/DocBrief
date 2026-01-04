@@ -1,8 +1,22 @@
 <div align="center">
-  
+
 # 📘 DocBrief
 
-DocBrief is a production-grade AI SaaS application designed to streamline document analysis. It transforms lengthy PDFs, text files, and scanned images into structured insights using Generative AI (RAG) and Optical Character Recognition (OCR).
+### Transform Documents into Actionable Intelligence
+
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Python](https://img.shields.io/badge/python-3.9+-blue?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Docker](https://img.shields.io/badge/docker-ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+
+A production-grade AI SaaS application that transforms lengthy PDFs, text files, and scanned images into structured insights using **Generative AI (RAG)** and **Optical Character Recognition (OCR)**.
+
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Now-blueviolet?style=for-the-badge)](https://docbrief.vercel.app)
+
+---
+
+<img src="https://drive.google.com/file/d/11NqyCVURUYpX25ZfIvHY0Zn6sMvVSk3N/view?usp=drive_link" alt="DocBrief Dashboard" width="80%"/>
+<img src="https://drive.google.com/file/d/11NqyCVURUYpX25ZfIvHY0Zn6sMvVSk3N/view?usp=drive_link" alt="DocBrief Dashboard" width="80%"/>
 
 </div>
 
