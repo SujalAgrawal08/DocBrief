@@ -38,58 +38,66 @@ DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalabilit
 ```mermaid
 graph LR
     %% --- THEME DEFINITIONS ---
-    %% White: Client-side / Entry points
-    classDef white fill:#ffffff,stroke:#1f2937,stroke-width:3px,color:#1f2937,rx:5,ry:5;
-    %% Purple: Processing / Active Logic / The "Brain"
-    classDef purple fill:#7e22ce,stroke:#3b0764,stroke-width:2px,color:#ffffff,rx:5,ry:5;
-    %% Black: Data Storage / AI / Deep Infrastructure
-    classDef black fill:#1f2937,stroke:#000000,stroke-width:2px,color:#ffffff,rx:5,ry:5;
+    
+    %% PURPLE: Logic/Compute (Deep Purple Fill + Light Lavender Stroke for "Glow")
+    classDef purple fill:#581c87,stroke:#d8b4fe,stroke-width:3px,color:#ffffff,rx:5,ry:5;
+    
+    %% WHITE: Client/Entry (White Fill + Deep Purple Stroke to match theme)
+    classDef white fill:#ffffff,stroke:#581c87,stroke-width:3px,color:#2e1065,rx:10,ry:10;
+    
+    %% BLACK: Data/AI (Matte Black Fill + Light Gray Stroke for contrast)
+    classDef black fill:#171717,stroke:#9ca3af,stroke-width:2px,color:#f3f4f6,rx:0,ry:0;
 
-    %% --- NODES & SUBGRAPHS ---
+    %% --- STRUCTURE ---
 
-    subgraph Client ["💻 Client Side"]
+    subgraph Client ["💻 Client Layer"]
         direction TB
         User([👤 User])
         UI[🖥️ Frontend UI<br/>Vercel Edge]
     end
 
-    subgraph Server ["⚙️ Server Logic"]
+    subgraph Server ["⚡ Processing Layer"]
         direction TB
-        Auth[🛡️ Auth Guard]
-        Controller[[⚡ API Controller<br/>Render Container]]
+        Auth{🛡️ Auth Check}
+        API[[⚙️ Backend API<br/>Render]]
     end
 
-    subgraph Infra ["☁️ Infrastructure & Services"]
+    subgraph Infra ["🗄️ Data & Intelligence"]
         direction TB
-        Bucket[(📂 Object Store<br/>Supabase Storage)]
-        DB[(🗄️ Database<br/>Supabase PG)]
-        AI{{🧠 AI Inference<br/>Groq Llama 3}}
+        Bucket[(📂 File Store)]
+        DB[(🗃️ SQL Database)]
+        AI{{🧠 AI Model<br/>Groq}}
     end
 
     %% --- CONNECTIONS ---
+
+    %% Main Flow
+    User ==>|Uploads| UI
+    UI ==>|JSON Request| Auth
     
-    %% Primary Flow
-    User ==>|Interacts| UI
-    UI ==>|HTTPS/JSON| Auth
+    %% Logic Branching
+    Auth -->|Valid| API
+    Auth -.->|403 Unauthorized| UI
     
-    %% Logic Flow
-    Auth -->|Valid Token| Controller
-    Auth -.->|Invalid| UI
+    %% Backend Operations
+    API -->|Store Asset| Bucket
+    API -->|Query Context| DB
+    API -->|Prompt| AI
     
-    %% Service Interactions
-    Controller -->|Upload File| Bucket
-    Controller -->|Fetch Context| DB
-    Controller -->|Generate| AI
-    
-    %% Return Flow
-    AI -.->|Streaming Response| Controller
-    DB -.->|Data Rows| Controller
-    Controller ==>|Final Response| UI
+    %% Returns
+    AI -.->|Inference| API
+    DB -.->|Data| API
+    API ==>|Response| UI
 
     %% --- APPLYING STYLES ---
     class User,UI white;
-    class Controller,Auth purple;
+    class API,Auth purple;
     class DB,AI,Bucket black;
+    
+    %% --- LINK STYLING ---
+    %% This colors the connection lines (0-8 are the index of the links drawn above)
+    linkStyle 0,1,2,4,5,6,7,8,9,10 stroke:#581c87,stroke-width:2px,fill:none;
+    linkStyle 3 stroke:#9ca3af,stroke-width:2px,stroke-dasharray: 5 5;
 ```
 
 ## 🛠️ Tech Stack
@@ -171,7 +179,7 @@ Fully automated Continuous Deployment:
 3. Render auto-builds new Docker image & restarts service
 4. Live in ~2 minutes
 
-## 📍 Workflow
+## 📍 Workflows
 
 ### Intelligent Extraction Pipeline (OCR Logic)
 ```mermaid
