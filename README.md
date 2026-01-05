@@ -36,86 +36,47 @@ DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalabilit
 ### High-Level System Architecture 
 
 ```mermaid
-graph TB
-    %% --- REFINED THEME DEFINITIONS ---
-    classDef userNode fill:#faf5ff,stroke:#9333ea,stroke-width:3px,color:#581c87,rx:50,ry:50;
-    classDef uiNode fill:#f3e8ff,stroke:#7c3aed,stroke-width:2px,color:#4c1d95,rx:12,ry:12;
-    classDef authNode fill:#c084fc,stroke:#a855f7,stroke-width:2px,color:#ffffff,rx:2,ry:2;
-    classDef apiNode fill:#7c3aed,stroke:#e9d5ff,stroke-width:3px,color:#ffffff,rx:10,ry:10;
-    classDef dataNode fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#e9d5ff,rx:6,ry:6;
-    classDef aiNode fill:#581c87,stroke:#c084fc,stroke-width:2px,color:#f5f3ff;
+graph LR
+    %% --- THEME ---
+    classDef layer1 fill:#faf5ff,stroke:#9333ea,stroke-width:2px,color:#581c87,rx:15,ry:15;
+    classDef layer2 fill:#e9d5ff,stroke:#7c3aed,stroke-width:2px,color:#4c1d95,rx:10,ry:10;
+    classDef layer3 fill:#8b5cf6,stroke:#c4b5fd,stroke-width:2px,color:#ffffff,rx:8,ry:8;
+    classDef layer4 fill:#4c1d95,stroke:#a855f7,stroke-width:2px,color:#f3e8ff,rx:5,ry:5;
 
-    %% --- CLIENT LAYER ---
-    subgraph Client ["  "]
-        direction LR
-        subgraph ClientInner ["&nbsp;&nbsp;&nbsp;💻 CLIENT&nbsp;&nbsp;&nbsp;"]
-            User([&nbsp;👤 User&nbsp;])
-            UI["🖥️ <b>Frontend</b><br/><sub>Vercel Edge</sub>"]
-        end
+    subgraph Input ["&nbsp;📥 INPUT&nbsp;"]
+        A([" 👤 User "])
     end
 
-    %% --- GATEWAY LAYER ---
-    subgraph Gateway ["  "]
-        direction TB
-        subgraph GatewayInner ["&nbsp;&nbsp;&nbsp;🚪 GATEWAY&nbsp;&nbsp;&nbsp;"]
-            Auth{"🛡️ <b>Auth</b>"}
-        end
+    subgraph Interface ["&nbsp;🖥️ INTERFACE&nbsp;"]
+        B[" Frontend<br/><sub>Vercel</sub> "]
     end
 
-    %% --- PROCESSING LAYER ---
-    subgraph Processing ["  "]
-        direction TB
-        subgraph ProcessingInner ["&nbsp;&nbsp;&nbsp;⚡ CORE ENGINE&nbsp;&nbsp;&nbsp;"]
-            API[["⚙️ <b>API Server</b><br/><sub>Render</sub>"]]
-        end
+    subgraph Security ["&nbsp;🔐 SECURITY&nbsp;"]
+        C{" Auth "}
     end
 
-    %% --- DATA LAYER ---
-    subgraph Data ["  "]
-        direction LR
-        subgraph DataInner ["&nbsp;&nbsp;&nbsp;🗄️ DATA & AI LAYER&nbsp;&nbsp;&nbsp;"]
-            Bucket[("📂<br/><b>Files</b>")]
-            DB[("🗃️<br/><b>Database</b>")]
-            AI{{"🧠<br/><b>AI Model</b>"}}
-        end
+    subgraph Core ["&nbsp;⚙️ CORE&nbsp;"]
+        D[[" API<br/><sub>Render</sub> "]]
     end
 
-    %% --- MAIN FLOW ---
-    User ====>|"&nbsp;① Upload&nbsp;"| UI
-    UI ===>|"&nbsp;② Request&nbsp;"| Auth
-    
-    Auth ===>|"&nbsp;✓ Authorized&nbsp;"| API
-    Auth -.-x|"✗ Denied"| UI
-    
-    %% --- DATA OPERATIONS ---
-    API --->|"③ Store"| Bucket
-    API --->|"④ Query"| DB
-    API --->|"⑤ Analyze"| AI
-    
-    %% --- RETURNS ---
-    Bucket -..->|"📁"| API
-    DB -..->|"📊"| API
-    AI -..->|"💡"| API
-    
-    %% --- RESPONSE ---
-    API ====>|"&nbsp;⑥ Response&nbsp;"| UI
+    subgraph Services ["&nbsp;🧩 SERVICES&nbsp;"]
+        E[(" 📂 Files ")]
+        F[(" 🗃️ DB ")]
+        G{{" 🧠 AI "}}
+    end
 
-    %% --- APPLY STYLES ---
-    class User userNode
-    class UI uiNode
-    class Auth authNode
-    class API apiNode
-    class Bucket,DB dataNode
-    class AI aiNode
+    A ==> B ==> C ==> D
+    D --> E & F & G
+    E & F & G -.-> D
+    D ==> B
 
-    %% --- LINK STYLING ---
-    linkStyle 0 stroke:#9333ea,stroke-width:4px
-    linkStyle 1 stroke:#7c3aed,stroke-width:3px
-    linkStyle 2 stroke:#22c55e,stroke-width:3px
-    linkStyle 3 stroke:#ef4444,stroke-width:2px,stroke-dasharray:8 4
-    linkStyle 4,5,6 stroke:#6d28d9,stroke-width:2px
-    linkStyle 7,8,9 stroke:#a78bfa,stroke-width:2px,stroke-dasharray:5 3
-    linkStyle 10 stroke:#9333ea,stroke-width:4px
+    class A layer1
+    class B layer2
+    class C,D layer3
+    class E,F,G layer4
+
+    linkStyle 0,1,2,3,7 stroke:#7c3aed,stroke-width:3px
+    linkStyle 4,5,6 stroke:#a855f7,stroke-width:2px,stroke-dasharray:5 3
 ```
 
 ## 🛠️ Tech Stack
