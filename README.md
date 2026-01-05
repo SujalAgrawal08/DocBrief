@@ -17,11 +17,11 @@ A production-grade AI SaaS application that transforms lengthy PDFs, text files,
 
 ---
 
-<img src="assets/DocBrief_Home.jpg" alt="DocBrief Dashboard" width="80%"/>
+<img src="assets/DocBrief_Home.png" alt="DocBrief Dashboard" width="80%"/>
 
 <br/><br/>
 
-<img src="assets/DocBrief_Login.jpg" alt="Login Page" width="80%"/>
+<img src="assets/DocBrief_Login.png" alt="Login Page" width="80%"/>
 
 </div>
 
