@@ -37,30 +37,59 @@ DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalabilit
 
 ```mermaid
 graph LR
-    %% Theme Styling
-    classDef purple fill:#7e22ce,stroke:#581c87,stroke-width:2px,color:white;
-    classDef white fill:#ffffff,stroke:#1f2937,stroke-width:2px,color:#1f2937;
-    classDef black fill:#1f2937,stroke:#000000,stroke-width:2px,color:white;
+    %% --- THEME DEFINITIONS ---
+    %% White: Client-side / Entry points
+    classDef white fill:#ffffff,stroke:#1f2937,stroke-width:3px,color:#1f2937,rx:5,ry:5;
+    %% Purple: Processing / Active Logic / The "Brain"
+    classDef purple fill:#7e22ce,stroke:#3b0764,stroke-width:2px,color:#ffffff,rx:5,ry:5;
+    %% Black: Data Storage / AI / Deep Infrastructure
+    classDef black fill:#1f2937,stroke:#000000,stroke-width:2px,color:#ffffff,rx:5,ry:5;
 
-    %% Nodes
-    User([👤 User]) 
-    FE[🖥️ Frontend<br/>Vercel Edge]
-    BE[⚙️ Backend API<br/>Render Container]
+    %% --- NODES & SUBGRAPHS ---
+
+    subgraph Client ["💻 Client Side"]
+        direction TB
+        User([👤 User])
+        UI[🖥️ Frontend UI<br/>Vercel Edge]
+    end
+
+    subgraph Server ["⚙️ Server Logic"]
+        direction TB
+        Auth[🛡️ Auth Guard]
+        Controller[[⚡ API Controller<br/>Render Container]]
+    end
+
+    subgraph Infra ["☁️ Infrastructure & Services"]
+        direction TB
+        Bucket[(📂 Object Store<br/>Supabase Storage)]
+        DB[(🗄️ Database<br/>Supabase PG)]
+        AI{{🧠 AI Inference<br/>Groq Llama 3}}
+    end
+
+    %% --- CONNECTIONS ---
     
-    %% Branching Services
-    DB[(🗄️ Database<br/>Supabase)]
-    AI{{🧠 AI Model<br/>Groq Llama 3}}
+    %% Primary Flow
+    User ==>|Interacts| UI
+    UI ==>|HTTPS/JSON| Auth
+    
+    %% Logic Flow
+    Auth -->|Valid Token| Controller
+    Auth -.->|Invalid| UI
+    
+    %% Service Interactions
+    Controller -->|Upload File| Bucket
+    Controller -->|Fetch Context| DB
+    Controller -->|Generate| AI
+    
+    %% Return Flow
+    AI -.->|Streaming Response| Controller
+    DB -.->|Data Rows| Controller
+    Controller ==>|Final Response| UI
 
-    %% Connections
-    User -->|Upload| FE
-    FE -->|JSON Request| BE
-    BE -->|SQL Query| DB
-    BE -->|Prompt Context| AI
-
-    %% Styling Applications
-    class User,FE white;
-    class BE purple;
-    class DB,AI black;
+    %% --- APPLYING STYLES ---
+    class User,UI white;
+    class Controller,Auth purple;
+    class DB,AI,Bucket black;
 ```
 
 ## 🛠️ Tech Stack
