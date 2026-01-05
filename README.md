@@ -36,22 +36,86 @@ DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalabilit
 ### High-Level System Architecture 
 
 ```mermaid
-graph LR
-    classDef node1 fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6
-    classDef node2 fill:#8b5cf6,stroke:#c4b5fd,stroke-width:2px,color:#fff
-    classDef node3 fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#e9d5ff
+graph TB
+    %% --- REFINED THEME DEFINITIONS ---
+    classDef userNode fill:#faf5ff,stroke:#9333ea,stroke-width:3px,color:#581c87,rx:50,ry:50;
+    classDef uiNode fill:#f3e8ff,stroke:#7c3aed,stroke-width:2px,color:#4c1d95,rx:12,ry:12;
+    classDef authNode fill:#c084fc,stroke:#a855f7,stroke-width:2px,color:#ffffff,rx:2,ry:2;
+    classDef apiNode fill:#7c3aed,stroke:#e9d5ff,stroke-width:3px,color:#ffffff,rx:10,ry:10;
+    classDef dataNode fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#e9d5ff,rx:6,ry:6;
+    classDef aiNode fill:#581c87,stroke:#c084fc,stroke-width:2px,color:#f5f3ff;
 
-    A([👤 User]) --> B[🖥️ UI]
-    B --> C{🛡️ Auth}
-    C --> D[[⚙️ API]]
-    D --> E[(💾 DB)]
-    D --> F{{🧠 AI}}
-    F -.-> D
-    D --> B
+    %% --- CLIENT LAYER ---
+    subgraph Client ["  "]
+        direction LR
+        subgraph ClientInner ["&nbsp;&nbsp;&nbsp;💻 CLIENT&nbsp;&nbsp;&nbsp;"]
+            User([&nbsp;👤 User&nbsp;])
+            UI["🖥️ <b>Frontend</b><br/><sub>Vercel Edge</sub>"]
+        end
+    end
 
-    class A,B node1
-    class C,D node2
-    class E,F node3
+    %% --- GATEWAY LAYER ---
+    subgraph Gateway ["  "]
+        direction TB
+        subgraph GatewayInner ["&nbsp;&nbsp;&nbsp;🚪 GATEWAY&nbsp;&nbsp;&nbsp;"]
+            Auth{"🛡️ <b>Auth</b>"}
+        end
+    end
+
+    %% --- PROCESSING LAYER ---
+    subgraph Processing ["  "]
+        direction TB
+        subgraph ProcessingInner ["&nbsp;&nbsp;&nbsp;⚡ CORE ENGINE&nbsp;&nbsp;&nbsp;"]
+            API[["⚙️ <b>API Server</b><br/><sub>Render</sub>"]]
+        end
+    end
+
+    %% --- DATA LAYER ---
+    subgraph Data ["  "]
+        direction LR
+        subgraph DataInner ["&nbsp;&nbsp;&nbsp;🗄️ DATA & AI LAYER&nbsp;&nbsp;&nbsp;"]
+            Bucket[("📂<br/><b>Files</b>")]
+            DB[("🗃️<br/><b>Database</b>")]
+            AI{{"🧠<br/><b>AI Model</b>"}}
+        end
+    end
+
+    %% --- MAIN FLOW ---
+    User ====>|"&nbsp;① Upload&nbsp;"| UI
+    UI ===>|"&nbsp;② Request&nbsp;"| Auth
+    
+    Auth ===>|"&nbsp;✓ Authorized&nbsp;"| API
+    Auth -.-x|"✗ Denied"| UI
+    
+    %% --- DATA OPERATIONS ---
+    API --->|"③ Store"| Bucket
+    API --->|"④ Query"| DB
+    API --->|"⑤ Analyze"| AI
+    
+    %% --- RETURNS ---
+    Bucket -..->|"📁"| API
+    DB -..->|"📊"| API
+    AI -..->|"💡"| API
+    
+    %% --- RESPONSE ---
+    API ====>|"&nbsp;⑥ Response&nbsp;"| UI
+
+    %% --- APPLY STYLES ---
+    class User userNode
+    class UI uiNode
+    class Auth authNode
+    class API apiNode
+    class Bucket,DB dataNode
+    class AI aiNode
+
+    %% --- LINK STYLING ---
+    linkStyle 0 stroke:#9333ea,stroke-width:4px
+    linkStyle 1 stroke:#7c3aed,stroke-width:3px
+    linkStyle 2 stroke:#22c55e,stroke-width:3px
+    linkStyle 3 stroke:#ef4444,stroke-width:2px,stroke-dasharray:8 4
+    linkStyle 4,5,6 stroke:#6d28d9,stroke-width:2px
+    linkStyle 7,8,9 stroke:#a78bfa,stroke-width:2px,stroke-dasharray:5 3
+    linkStyle 10 stroke:#9333ea,stroke-width:4px
 ```
 
 ## 🛠️ Tech Stack
