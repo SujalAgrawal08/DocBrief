@@ -36,59 +36,22 @@ DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalabilit
 ### High-Level System Architecture 
 
 ```mermaid
-graph TB
-    %% --- THEME DEFINITIONS ---
-    classDef purple fill:#7c3aed,stroke:#a78bfa,stroke-width:2px,color:#ffffff,rx:8,ry:8;
-    classDef lightPurple fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#4c1d95,rx:8,ry:8;
-    classDef white fill:#ffffff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6,rx:8,ry:8;
-    classDef dark fill:#4c1d95,stroke:#c4b5fd,stroke-width:2px,color:#f5f3ff,rx:4,ry:4;
-    classDef decision fill:#a855f7,stroke:#e9d5ff,stroke-width:2px,color:#ffffff;
+graph LR
+    classDef node1 fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6
+    classDef node2 fill:#8b5cf6,stroke:#c4b5fd,stroke-width:2px,color:#fff
+    classDef node3 fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#e9d5ff
 
-    %% --- NODES & SUBGRAPHS ---
-    
-    subgraph Client ["<b>💻 CLIENT LAYER</b>"]
-        direction TB
-        User([👤 User])
-        UI[🖥️ Frontend UI<br/><i>Vercel Edge</i>]
-    end
+    A([👤 User]) --> B[🖥️ UI]
+    B --> C{🛡️ Auth}
+    C --> D[[⚙️ API]]
+    D --> E[(💾 DB)]
+    D --> F{{🧠 AI}}
+    F -.-> D
+    D --> B
 
-    subgraph Server ["<b>⚡ PROCESSING LAYER</b>"]
-        direction TB
-        Auth{🛡️ Auth<br/>Check}
-        API[[⚙️ Backend API<br/><i>Render</i>]]
-    end
-
-    subgraph Infra ["<b>🗄️ DATA & INTELLIGENCE</b>"]
-        direction LR
-        Bucket[(📂 File<br/>Store)]
-        DB[(🗃️ SQL<br/>Database)]
-        AI{{🧠 AI<br/>Model}}
-    end
-
-    %% --- CONNECTIONS ---
-    
-    User -->|"① Upload"| UI
-    UI -->|"② Request"| Auth
-    Auth -->|"✓ Valid"| API
-    Auth -.->|"✗ Invalid"| UI
-    
-    API -->|"⑤ Store"| Bucket
-    API -->|"⑥ Query"| DB
-    API -->|"⑦ Prompt"| AI
-    
-    AI -.->|"⑧ Inference"| API
-    DB -.->|"⑨ Data"| API
-    API -->|"⑩ Response"| UI
-
-    %% --- STYLING APPLICATION ---
-    class User,UI lightPurple
-    class API purple
-    class Auth decision
-    class DB,AI,Bucket dark
-
-    %% --- LINK STYLES ---
-    linkStyle 0,1,2,4,5,6,9 stroke:#7c3aed,stroke-width:2.5px
-    linkStyle 3,7,8 stroke:#a78bfa,stroke-width:2px,stroke-dasharray:5 5
+    class A,B node1
+    class C,D node2
+    class E,F node3
 ```
 
 ## 🛠️ Tech Stack
