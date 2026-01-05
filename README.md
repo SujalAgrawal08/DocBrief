@@ -36,18 +36,14 @@ DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalabilit
 ### High-Level System Architecture 
 
 ```mermaid
-graph LR
+graph TB
     %% --- THEME DEFINITIONS ---
-    %% PURPLE: Logic/Compute (Deep Purple Fill + Light Lavender Stroke)
     classDef purple fill:#581c87,stroke:#d8b4fe,stroke-width:2px,color:#ffffff,rx:5,ry:5;
-    
-    %% WHITE: Client/Entry (White Fill + Deep Purple Stroke)
     classDef white fill:#ffffff,stroke:#581c87,stroke-width:2px,color:#2e1065,rx:5,ry:5;
-    
-    %% BLACK: Data/AI (Matte Black Fill + Gray Stroke)
     classDef black fill:#171717,stroke:#9ca3af,stroke-width:2px,color:#f3f4f6,rx:0,ry:0;
 
     %% --- NODES & SUBGRAPHS ---
+    
     subgraph Client ["💻 Client Layer"]
         direction TB
         User([👤 User])
@@ -60,37 +56,40 @@ graph LR
         API[[⚙️ Backend API<br/>Render]]
     end
 
+    %% Key Change: Infra flows Left-to-Right to save vertical space
     subgraph Infra ["🗄️ Data & Intelligence"]
-        direction TB
+        direction LR
         Bucket[(📂 File Store)]
-        DB[(🗃️ SQL Database)]
-        AI{{🧠 AI Model<br/>Groq}}
+        DB[(🗃️ SQL DB)]
+        AI{{🧠 AI Model}}
     end
 
     %% --- CONNECTIONS ---
-    %% To prevent errors, I have grouped these in exact order 0-9
     
     User ==>|1. Uploads| UI
     UI ==>|2. JSON Request| Auth
     Auth -->|3. Valid| API
     Auth -.->|4. Invalid| UI
-    API -->|5. Store Asset| Bucket
-    API -->|6. Query Context| DB
+    
+    %% Connections to Infra
+    API -->|5. Store| Bucket
+    API -->|6. Query| DB
     API -->|7. Prompt| AI
+    
+    %% Returns
     AI -.->|8. Inference| API
-    DB -.->|9. Data Rows| API
+    DB -.->|9. Data| API
     API ==>|10. Final Response| UI
 
-    %% --- APPLYING STYLES ---
+    %% --- STYLING APPLICATION ---
     class User,UI white;
     class API,Auth purple;
     class DB,AI,Bucket black;
     
-    %% --- LINK STYLING ---
-    %% Solid Purple Lines (Flow) - Indices 0,1,2,4,5,6,9
+    %% --- LINK STYLES ---
+    %% Solid Purple (Main Flow)
     linkStyle 0,1,2,4,5,6,9 stroke:#581c87,stroke-width:2px,fill:none;
-    
-    %% Dotted/Return Lines (Subtle Gray) - Indices 3,7,8
+    %% Dotted Gray (Returns/Errors)
     linkStyle 3,7,8 stroke:#9ca3af,stroke-width:2px,stroke-dasharray: 5 5;
 ```
 
