@@ -239,6 +239,47 @@ DocBrief/
     └── keep-alive.yml (Automation)
 ```
 
+## 🚀 Getting Started 
+
+Want to run DocBrief v2.0 on your machine? Follow these steps:
+
+### Prerequisites
+- Node.js ≥ 18
+- Python 3.9
+- Git
+- Docker (recommended) or Tesseract OCR installed locally
+- Accounts & API Keys:
+  - [Groq API Key](https://console.groq.com/keys) (free tier available)
+  - [Supabase Project](https://supabase.com) (free tier)
+
+### Step 1: Clone & Setup
+```bash
+git clone https://github.com/your-username/docbrief.git
+cd docbrief
+```
+### Step 2: Backend Setup
+
+```bash
+cd backend
+cp .env
+```
+<h2>Required variables in .env:</h2>
+
+```bash
+GROQ_API_KEY=your_groq_api_key_here
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your_anon_public_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key  # Keep this secret!
+FLASK_ENV=development
+```
+### Step 3: Frontend Setup
+
+```bash
+cd ../frontend
+npm install
+npm run dev
+```
+
 <div align="center">
 Built with ❤️ by Sujal Agrawal
 
