@@ -43,23 +43,24 @@ graph LR
     classDef black fill:#1f2937,stroke:#000000,stroke-width:2px,color:white;
 
     %% Nodes
-    User([👤 User]) -->|Interact| FE[🖥️ Frontend UI<br/>Vercel]
+    User([👤 User]) 
+    FE[🖥️ Frontend<br/>Vercel Edge]
+    BE[⚙️ Backend API<br/>Render Container]
     
-    subgraph Cloud ["☁️ Cloud Infrastructure"]
-        direction LR
-        FE -->|Secure API| BE[⚙️ Backend Server<br/>Render / Docker]
-        
-        BE -->|Store Data| DB[(🗄️ Supabase)]
-        BE -->|Generate| GROQ{{🧠 Groq AI}}
-    end
+    %% Branching Services
+    DB[(🗄️ Database<br/>Supabase)]
+    AI{{🧠 AI Model<br/>Groq Llama 3}}
 
-    %% Styles
+    %% Connections
+    User -->|Upload| FE
+    FE -->|JSON Request| BE
+    BE -->|SQL Query| DB
+    BE -->|Prompt Context| AI
+
+    %% Styling Applications
     class User,FE white;
     class BE purple;
-    class DB,GROQ black;
-    
-    %% Clean up the subgraph look
-    style Cloud fill:transparent,stroke:#d1d5db,stroke-width:2px,stroke-dasharray: 5 5;
+    class DB,AI black;
 ```
 
 ## 🛠️ Tech Stack
