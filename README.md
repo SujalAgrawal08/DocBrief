@@ -38,18 +38,16 @@ DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalabilit
 ```mermaid
 graph LR
     %% --- THEME DEFINITIONS ---
+    %% PURPLE: Logic/Compute (Deep Purple Fill + Light Lavender Stroke)
+    classDef purple fill:#581c87,stroke:#d8b4fe,stroke-width:2px,color:#ffffff,rx:5,ry:5;
     
-    %% PURPLE: Logic/Compute (Deep Purple Fill + Light Lavender Stroke for "Glow")
-    classDef purple fill:#581c87,stroke:#d8b4fe,stroke-width:3px,color:#ffffff,rx:5,ry:5;
+    %% WHITE: Client/Entry (White Fill + Deep Purple Stroke)
+    classDef white fill:#ffffff,stroke:#581c87,stroke-width:2px,color:#2e1065,rx:5,ry:5;
     
-    %% WHITE: Client/Entry (White Fill + Deep Purple Stroke to match theme)
-    classDef white fill:#ffffff,stroke:#581c87,stroke-width:3px,color:#2e1065,rx:10,ry:10;
-    
-    %% BLACK: Data/AI (Matte Black Fill + Light Gray Stroke for contrast)
+    %% BLACK: Data/AI (Matte Black Fill + Gray Stroke)
     classDef black fill:#171717,stroke:#9ca3af,stroke-width:2px,color:#f3f4f6,rx:0,ry:0;
 
-    %% --- STRUCTURE ---
-
+    %% --- NODES & SUBGRAPHS ---
     subgraph Client ["💻 Client Layer"]
         direction TB
         User([👤 User])
@@ -70,24 +68,18 @@ graph LR
     end
 
     %% --- CONNECTIONS ---
-
-    %% Main Flow
-    User ==>|Uploads| UI
-    UI ==>|JSON Request| Auth
+    %% To prevent errors, I have grouped these in exact order 0-9
     
-    %% Logic Branching
-    Auth -->|Valid| API
-    Auth -.->|403 Unauthorized| UI
-    
-    %% Backend Operations
-    API -->|Store Asset| Bucket
-    API -->|Query Context| DB
-    API -->|Prompt| AI
-    
-    %% Returns
-    AI -.->|Inference| API
-    DB -.->|Data| API
-    API ==>|Response| UI
+    User ==>|1. Uploads| UI
+    UI ==>|2. JSON Request| Auth
+    Auth -->|3. Valid| API
+    Auth -.->|4. Invalid| UI
+    API -->|5. Store Asset| Bucket
+    API -->|6. Query Context| DB
+    API -->|7. Prompt| AI
+    AI -.->|8. Inference| API
+    DB -.->|9. Data Rows| API
+    API ==>|10. Final Response| UI
 
     %% --- APPLYING STYLES ---
     class User,UI white;
@@ -95,9 +87,11 @@ graph LR
     class DB,AI,Bucket black;
     
     %% --- LINK STYLING ---
-    %% This colors the connection lines (0-8 are the index of the links drawn above)
-    linkStyle 0,1,2,4,5,6,7,8,9,10 stroke:#581c87,stroke-width:2px,fill:none;
-    linkStyle 3 stroke:#9ca3af,stroke-width:2px,stroke-dasharray: 5 5;
+    %% Solid Purple Lines (Flow) - Indices 0,1,2,4,5,6,9
+    linkStyle 0,1,2,4,5,6,9 stroke:#581c87,stroke-width:2px,fill:none;
+    
+    %% Dotted/Return Lines (Subtle Gray) - Indices 3,7,8
+    linkStyle 3,7,8 stroke:#9ca3af,stroke-width:2px,stroke-dasharray: 5 5;
 ```
 
 ## 🛠️ Tech Stack
