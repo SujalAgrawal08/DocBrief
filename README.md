@@ -36,26 +36,31 @@ DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalabilit
 ### High-Level System Architecture 
 
 ```mermaid
-graph TD
+graph LR
     %% Theme Styling
     classDef purple fill:#7e22ce,stroke:#581c87,stroke-width:2px,color:white;
     classDef white fill:#ffffff,stroke:#1f2937,stroke-width:2px,color:#1f2937;
     classDef black fill:#1f2937,stroke:#000000,stroke-width:2px,color:white;
 
     %% Nodes
-    User([👤 User]) -->|Uploads Document| FE[🖥️ Frontend Vercel]
-    FE -->|POST /analyze_document| BE[⚙️ Backend API Render / Docker]
+    User([👤 User]) 
+    FE[🖥️ Frontend<br/>Vercel Edge]
+    BE[⚙️ Backend API<br/>Render Container]
     
-    subgraph Services ["☁️ External Services"]
-        direction TB
-        BE -->|Store/Fetch Metadata| DB[(🗄️ Supabase PostgreSQL)]
-        BE -->|LLM Inference| GROQ[🧠 Groq AI Llama 3]
-    end
+    %% Branching Services
+    DB[(🗄️ Database<br/>Supabase)]
+    AI{{🧠 AI Model<br/>Groq Llama 3}}
 
-    %% Styles
+    %% Connections
+    User -->|Upload| FE
+    FE -->|JSON Request| BE
+    BE -->|SQL Query| DB
+    BE -->|Prompt Context| AI
+
+    %% Styling Applications
     class User,FE white;
     class BE purple;
-    class DB,GROQ black;
+    class DB,AI black;
 ```
 
 ## 🛠️ Tech Stack
