@@ -137,7 +137,67 @@ Fully automated Continuous Deployment:
 3. Render auto-builds new Docker image & restarts service
 4. Live in ~2 minutes
 
-## High-Level System Architecture
+## 📍 Workflow
+
+### Intelligent Extraction Pipeline (OCR Logic)
+```mermaid
+flowchart TD
+    %% Theme Styling
+    classDef purple fill:#7e22ce,stroke:#581c87,stroke-width:2px,color:white;
+    classDef white fill:#ffffff,stroke:#1f2937,stroke-width:2px,color:#1f2937;
+    classDef black fill:#1f2937,stroke:#000000,stroke-width:2px,color:white;
+
+    %% Flow
+    Start([📄 Incoming File]) --> Check{Is it PDF?}
+    
+    %% PDF Path
+    Check -- Yes --> PyPDF[📖 PyPDF2 Extraction]
+    PyPDF --> Clean[✨ Text Cleaning]
+
+    %% Image Path
+    Check -- No (Image) --> Opt1[🎨 Convert to Grayscale]
+    Opt1 --> Opt2[Vm Resize to 1200px Max]
+    Opt2 --> OCR[👁️ Tesseract OCR Engine]
+    OCR --> Clean
+
+    %% Final
+    Clean --> JSON[📝 JSON Payload]
+    JSON --> End([🚀 Ready for AI Analysis])
+
+    %% Styles
+    class Start,Check,Clean,JSON white;
+    class PyPDF,Opt1,Opt2,OCR purple;
+    class End black;
+```
+
+### Automated Maintenance & Keep-Alive Flow
+
+```mermaid
+sequenceDiagram
+    %% Theme Configuration
+    %% Note: Sequence diagrams use specific config objects or themes, 
+    %% but we can simulate the look via actor colors in some renderers.
+    
+    participant GH as 🐙 GitHub Actions (Cron)
+    participant BE as ⚙️ Render Backend
+    participant DB as 🗄️ Supabase DB
+
+    Note over GH: Every 24 Hours (Midnight UTC)
+    
+    GH->>BE: GET /keep_alive
+    activate BE
+    Note right of BE: Wakes up Free Tier Server
+    
+    BE->>DB: SELECT id FROM documents LIMIT 1
+    activate DB
+    Note right of DB: Resets 7-Day Inactivity Timer
+    
+    DB-->>BE: 200 OK (Row Found)
+    deactivate DB
+    
+    BE-->>GH: 200 OK (Status: Alive)
+    deactivate BE
+```
 
 ## 📂 Directory Structure
 ```bash
