@@ -25,7 +25,7 @@ A production-grade AI SaaS application that transforms lengthy PDFs, text files,
 
 </div>
 
-## 🏗️ 1. System Architecture
+## 🏗️ System Architecture
 
 DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalability and separation of concerns.
 
@@ -33,10 +33,32 @@ DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalabilit
 - **Backend (Server)**: Containerized Python application hosted on Render  
 - **Database**: Supabase (PostgreSQL) with Row Level Security (RLS)
 
-**High-Level Data Flow**  
-`User Upload → Frontend → Backend API → OCR Engine / LLM → Database → Frontend Visualization`
+### High-Level System Architecture 
 
-## 🛠️ 2. Tech Stack
+```mermaid
+graph TD
+    %% Theme Styling
+    classDef purple fill:#7e22ce,stroke:#581c87,stroke-width:2px,color:white;
+    classDef white fill:#ffffff,stroke:#1f2937,stroke-width:2px,color:#1f2937;
+    classDef black fill:#1f2937,stroke:#000000,stroke-width:2px,color:white;
+
+    %% Nodes
+    User([👤 User]) -->|Uploads Document| FE[🖥️ Frontend Vercel]
+    FE -->|POST /analyze_document| BE[⚙️ Backend API Render / Docker]
+    
+    subgraph Services ["☁️ External Services"]
+        direction TB
+        BE -->|Store/Fetch Metadata| DB[(🗄️ Supabase PostgreSQL)]
+        BE -->|LLM Inference| GROQ[🧠 Groq AI Llama 3]
+    end
+
+    %% Styles
+    class User,FE white;
+    class BE purple;
+    class DB,GROQ black;
+```
+
+## 🛠️ Tech Stack
 
 | Component  | Technology                    | Role                                                      |
 |------------|-------------------------------|-----------------------------------------------------------|
@@ -53,7 +75,7 @@ DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalabilit
 | Database   | Supabase (PostgreSQL)         | Storage + Row Level Security (RLS)                        |
 | DevOps     | GitHub Actions                | CI/CD automation + Keep-alive scripts                     |
 
-## ⚙️ 3. Key Features & Implementation Logic
+## ⚙️ Key Features & Implementation Logic
 
 ### A. Smart Document Processing (OCR & Text Extraction)
 **Goal**: Convert any file format (PDF, PNG, JPG) into raw text for the AI.
@@ -98,7 +120,7 @@ How it works:
 * Dynamic route `/share/:id` renders read-only dashboard
 * Owner retains full control (UPDATE/DELETE restricted)
 
-## 🛡️ 4. Security & Scalability Measures
+## 🛡️ Security & Scalability Measures
 1. **Docker Containerization**
    Custom Dockerfile installs `tesseract-ocr` + `libtesseract-dev` → consistent deployment on Render
 2. **API Rate Limiting**
@@ -108,14 +130,16 @@ How it works:
 4. **Database & Service Keep-Alive**
    GitHub Action runs daily cron → `hits /keep_alive` endpoint → prevents Supabase pause & keeps Render warm
 
-## 🚀 5. Deployment Pipeline
+## 🚀 Deployment Pipeline
 Fully automated Continuous Deployment:
 1. Push to `master` → GitHub
 2. Vercel auto-deploys frontend (Edge Network)
 3. Render auto-builds new Docker image & restarts service
 4. Live in ~2 minutes
 
-## 📂 6. Directory Structure
+## High-Level System Architecture
+
+## 📂 Directory Structure
 ```bash
 DocBrief/
 ├── frontend/ (Root for Vercel)
