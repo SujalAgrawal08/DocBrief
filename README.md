@@ -263,7 +263,7 @@ cd docbrief
 cd backend
 cp .env
 ```
-<h2>Required variables in .env:</h2>
+Required variables in .env:
 
 ```bash
 GROQ_API_KEY=your_groq_api_key_here
