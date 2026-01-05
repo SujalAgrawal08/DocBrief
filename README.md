@@ -38,59 +38,57 @@ DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalabilit
 ```mermaid
 graph TB
     %% --- THEME DEFINITIONS ---
-    classDef purple fill:#581c87,stroke:#d8b4fe,stroke-width:2px,color:#ffffff,rx:5,ry:5;
-    classDef white fill:#ffffff,stroke:#581c87,stroke-width:2px,color:#2e1065,rx:5,ry:5;
-    classDef black fill:#171717,stroke:#9ca3af,stroke-width:2px,color:#f3f4f6,rx:0,ry:0;
+    classDef purple fill:#7c3aed,stroke:#a78bfa,stroke-width:2px,color:#ffffff,rx:8,ry:8;
+    classDef lightPurple fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#4c1d95,rx:8,ry:8;
+    classDef white fill:#ffffff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6,rx:8,ry:8;
+    classDef dark fill:#4c1d95,stroke:#c4b5fd,stroke-width:2px,color:#f5f3ff,rx:4,ry:4;
+    classDef decision fill:#a855f7,stroke:#e9d5ff,stroke-width:2px,color:#ffffff;
 
     %% --- NODES & SUBGRAPHS ---
     
-    subgraph Client ["💻 Client Layer"]
+    subgraph Client ["<b>💻 CLIENT LAYER</b>"]
         direction TB
         User([👤 User])
-        UI[🖥️ Frontend UI<br/>Vercel Edge]
+        UI[🖥️ Frontend UI<br/><i>Vercel Edge</i>]
     end
 
-    subgraph Server ["⚡ Processing Layer"]
+    subgraph Server ["<b>⚡ PROCESSING LAYER</b>"]
         direction TB
-        Auth{🛡️ Auth Check}
-        API[[⚙️ Backend API<br/>Render]]
+        Auth{🛡️ Auth<br/>Check}
+        API[[⚙️ Backend API<br/><i>Render</i>]]
     end
 
-    %% Key Change: Infra flows Left-to-Right to save vertical space
-    subgraph Infra ["🗄️ Data & Intelligence"]
+    subgraph Infra ["<b>🗄️ DATA & INTELLIGENCE</b>"]
         direction LR
-        Bucket[(📂 File Store)]
-        DB[(🗃️ SQL DB)]
-        AI{{🧠 AI Model}}
+        Bucket[(📂 File<br/>Store)]
+        DB[(🗃️ SQL<br/>Database)]
+        AI{{🧠 AI<br/>Model}}
     end
 
     %% --- CONNECTIONS ---
     
-    User ==>|1. Uploads| UI
-    UI ==>|2. JSON Request| Auth
-    Auth -->|3. Valid| API
-    Auth -.->|4. Invalid| UI
+    User -->|"① Upload"| UI
+    UI -->|"② Request"| Auth
+    Auth -->|"✓ Valid"| API
+    Auth -.->|"✗ Invalid"| UI
     
-    %% Connections to Infra
-    API -->|5. Store| Bucket
-    API -->|6. Query| DB
-    API -->|7. Prompt| AI
+    API -->|"⑤ Store"| Bucket
+    API -->|"⑥ Query"| DB
+    API -->|"⑦ Prompt"| AI
     
-    %% Returns
-    AI -.->|8. Inference| API
-    DB -.->|9. Data| API
-    API ==>|10. Final Response| UI
+    AI -.->|"⑧ Inference"| API
+    DB -.->|"⑨ Data"| API
+    API -->|"⑩ Response"| UI
 
     %% --- STYLING APPLICATION ---
-    class User,UI white;
-    class API,Auth purple;
-    class DB,AI,Bucket black;
-    
+    class User,UI lightPurple
+    class API purple
+    class Auth decision
+    class DB,AI,Bucket dark
+
     %% --- LINK STYLES ---
-    %% Solid Purple (Main Flow)
-    linkStyle 0,1,2,4,5,6,9 stroke:#581c87,stroke-width:2px,fill:none;
-    %% Dotted Gray (Returns/Errors)
-    linkStyle 3,7,8 stroke:#9ca3af,stroke-width:2px,stroke-dasharray: 5 5;
+    linkStyle 0,1,2,4,5,6,9 stroke:#7c3aed,stroke-width:2.5px
+    linkStyle 3,7,8 stroke:#a78bfa,stroke-width:2px,stroke-dasharray:5 5
 ```
 
 ## 🛠️ Tech Stack
