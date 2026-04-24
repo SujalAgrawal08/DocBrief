@@ -252,15 +252,15 @@ def keep_alive():
     # We grab keys from environment, but fallback gracefully if not set
     # so local development doesn't break.
     supabase_url = os.getenv("SUPABASE_URL")
-    supabase_anon_key = os.getenv("SUPABASE_ANON_KEY")
+    supabase_key = os.getenv("SUPABASE_KEY")
     
     status = {"backend_status": "awake", "supabase_status": "skipped", "timestamp": time.time()}
     
-    if supabase_url and supabase_anon_key:
+    if supabase_url and supabase_key:
         try:
             headers = {
-                "apikey": supabase_anon_key,
-                "Authorization": f"Bearer {supabase_anon_key}"
+                "apikey": supabase_key,
+                "Authorization": f"Bearer {supabase_key}"
             }
             # Minimal query to keep Postgres awake
             url = f"{supabase_url}/rest/v1/documents?select=id&limit=1"
