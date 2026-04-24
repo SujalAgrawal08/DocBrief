@@ -9,7 +9,7 @@
 [![Docker](https://img.shields.io/badge/Docker-7c3aed?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-7c3aed?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
-A production-grade AI SaaS application that transforms lengthy PDFs, text files, and scanned images into structured insights using **Generative AI (RAG)** and **Optical Character Recognition (OCR)**.
+A production-grade AI SaaS application that transforms lengthy PDFs, text files, and scanned images into structured insights using a **Retrieval-Augmented Generation (RAG) pipeline** powered by **Llama 3.3** and **Tesseract OCR**.
 
 [![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Site-a855f7?style=for-the-badge)](https://docbrief.vercel.app)
 [![Report Bug](https://img.shields.io/badge/🐛_Report-Bug-6d28d9?style=for-the-badge)](../../issues)
@@ -27,17 +27,48 @@ A production-grade AI SaaS application that transforms lengthy PDFs, text files,
 
 ## 🏗️ System Architecture
 
-DocBrief follows a **Decoupled Client-Server Architecture** to ensure scalability and separation of concerns.
+DocBrief follows a **Decoupled Client-Server Architecture** with a **genuine RAG pipeline** on the backend.
 
 - **Frontend (Client)**: Single Page Application (SPA) hosted on Vercel  
 - **Backend (Server)**: Containerized Python application hosted on Render  
 - **Database**: Supabase (PostgreSQL) with Row Level Security (RLS)
 
+### RAG Pipeline Architecture
+
+```mermaid
+flowchart TD
+    classDef input fill:#faf5ff,stroke:#9333ea,stroke-width:2px,color:#581c87;
+    classDef process fill:#e9d5ff,stroke:#7c3aed,stroke-width:2px,color:#4c1d95;
+    classDef ai fill:#8b5cf6,stroke:#c4b5fd,stroke-width:2px,color:#ffffff;
+    classDef output fill:#4c1d95,stroke:#a855f7,stroke-width:2px,color:#f3e8ff;
+
+    A([📄 Document Upload]) --> B{File Type?}
+    B -- PDF --> C[PyPDF2 Extraction]
+    B -- Image --> D[Tesseract OCR]
+    B -- TXT --> E[UTF-8 Read]
+    C & D & E --> F[Raw Text]
+
+    F --> G[Chunking<br/>500 chars / 50 overlap]
+    G --> H[Embedding Generation<br/>MiniLM-L6-v2]
+    H --> I[(FAISS Index<br/>IndexFlatIP)]
+
+    J([🔍 Analysis Query]) --> K[Query Embedding]
+    K --> I
+    I --> L[Top-K Retrieval<br/>Cosine Similarity]
+    L --> M[Retrieved Context]
+    M --> N{{🧠 Llama 3.3 via Groq}}
+    N --> O([📊 Structured JSON Response])
+
+    class A,J input
+    class B,C,D,E,F process
+    class G,H,I,K,L,M ai
+    class N,O output
+```
+
 ### High-Level System Architecture 
 
 ```mermaid
 graph LR
-    %% --- THEME ---
     classDef layer1 fill:#faf5ff,stroke:#9333ea,stroke-width:2px,color:#581c87,rx:15,ry:15;
     classDef layer2 fill:#e9d5ff,stroke:#7c3aed,stroke-width:2px,color:#4c1d95,rx:10,ry:10;
     classDef layer3 fill:#8b5cf6,stroke:#c4b5fd,stroke-width:2px,color:#ffffff,rx:8,ry:8;
@@ -62,7 +93,7 @@ graph LR
     subgraph Services ["&nbsp;🧩 SERVICES&nbsp;"]
         E[(" 📂 Files ")]
         F[(" 🗃️ DB ")]
-        G{{" 🧠 AI "}}
+        G{{"🧠 RAG + AI "}}
     end
 
     A ==> B ==> C ==> D
@@ -82,19 +113,21 @@ graph LR
 ## 🛠️ Tech Stack
 
 | Component  | Technology                    | Role                                                      |
-|------------|-------------------------------|-----------------------------------------------------------|
-| Frontend   | React.js + Vite               | Core UI library & fast build tool                         |
-|            | Tailwind CSS                  | Utility-first styling for responsive design               |
-|            | Recharts                      | Data visualization (charts & graphs)                      |
-|            | jsPDF                         | Client-side PDF report generation                         |
-| Backend    | Python 3.9 + Flask            | API framework                                             |
-|            | Docker                        | Containerization (OS-level dependencies)                  |
-|            | PyPDF2                        | Native text extraction for PDFs                           |
-|            | Tesseract OCR + pytesseract   | Text extraction for images/scanned docs                   |
-|            | Groq API                      | Fast inference LLM (Llama 3 8B/70B models)                 |
-|            | Flask-Limiter                 | API rate limiting & DDoS protection                       |
-| Database   | Supabase (PostgreSQL)         | Storage + Row Level Security (RLS)                        |
-| DevOps     | GitHub Actions                | CI/CD automation + Keep-alive scripts                     |
+|------------|-------------------------------|------------------------------------------------------------|
+| Frontend   | React.js + Vite               | Core UI library & fast build tool                          |
+|            | Tailwind CSS                  | Utility-first styling for responsive design                |
+|            | Recharts                      | Data visualization (charts & graphs)                       |
+|            | jsPDF                         | Client-side PDF report generation                          |
+| Backend    | Python 3.9 + Flask            | API framework                                              |
+|            | Docker + Gunicorn             | Containerization & production WSGI server                  |
+|            | PyPDF2                        | Native text extraction for PDFs                            |
+|            | Tesseract OCR + pytesseract   | Text extraction for images/scanned docs                    |
+|            | sentence-transformers (MiniLM)| Embedding generation for RAG pipeline                      |
+|            | FAISS (faiss-cpu)             | Vector similarity search for chunk retrieval               |
+|            | Groq API (Llama 3.3 70B)     | Fast inference LLM for analysis & generation               |
+|            | Flask-Limiter                 | API rate limiting & DDoS protection                        |
+| Database   | Supabase (PostgreSQL)         | Storage + Row Level Security (RLS)                         |
+| Automation | GitHub Actions                | Supabase keep-alive cron (prevents DB pause)               |
 
 ## ⚙️ Key Features & Implementation Logic
 
@@ -109,27 +142,31 @@ graph LR
   - Extraction: Tesseract v5 via pytesseract
 - Code: `app.py → /extract_text` endpoint
 
-### B. RAG-Powered Analysis (Summarization & Insights)
-**Goal**: Generate structured intelligence from raw text.
+### B. RAG-Powered Analysis (Genuine Retrieval-Augmented Generation)
+**Goal**: Generate structured intelligence from raw text using real retrieval.
 
 **How it works**:
-1. Extracted text sent to backend
-2. Strict system prompt enforces JSON output:
-   ```json
-   {
-     "summary": "...",
-     "clauses": [...],
-     "action_items": [...]
-   }
-3. Groq API (Llama 3 8B) inference
-4. Backend parses & cleans JSON response
-* Code: app.py → /analyze_document endpoint
+1. Extracted text is **chunked** into 500-character segments with 50-character overlap
+2. Each chunk is **embedded** using `sentence-transformers/all-MiniLM-L6-v2` (384-dim vectors)
+3. Embeddings are stored in a **FAISS IndexFlatIP** (inner product on L2-normalized vectors = cosine similarity)
+4. An analysis-focused query is embedded and used to **retrieve Top-10** most relevant chunks
+5. Only the retrieved context (not the full document) is sent to **Llama 3.3 70B** via Groq API
+6. LLM generates structured JSON output (summary, clauses, obligations, actions)
 
-### C. Interactive Context-Aware Chatbot
-How it works:
-* Frontend sends document text + user question
-* Backend injects full document context into prompt
-* LLM answers strictly based on provided document only
+**Why RAG matters**: Instead of truncating documents at 15K characters and hoping the important parts are at the beginning, RAG retrieves the *most relevant* sections regardless of their position in the document.
+
+- Core module: `rag_engine.py`
+- Endpoint: `app.py → /analyze_document`
+
+### C. RAG-Powered Context-Aware Chatbot
+**How it works**:
+1. User asks a question about the uploaded document
+2. Backend embeds the question using MiniLM-L6-v2
+3. **Top-5 relevant chunks** are retrieved from the FAISS index
+4. Only those chunks are injected as context into the LLM prompt
+5. Llama 3.3 answers based strictly on retrieved context
+
+- Endpoint: `app.py → /chatbot`
 
 ### D. Analytics Dashboard
 * **Complexity Score**: Based on sentence length, vocabulary density, clause count
@@ -141,107 +178,118 @@ How it works:
 * Dynamic route `/share/:id` renders read-only dashboard
 * Owner retains full control (UPDATE/DELETE restricted)
 
-## 🛡️ Security & Scalability Measures
-1. **Docker Containerization**
-   Custom Dockerfile installs `tesseract-ocr` + `libtesseract-dev` → consistent deployment on Render
-2. **API Rate Limiting**
-   Flask-Limiter → 10 requests/minute (protects free-tier backend)
-3. **CORS Hardening**
-   Whitelists only `https://docbrief.vercel.app`
-4. **Database & Service Keep-Alive**
-   GitHub Action runs daily cron → `hits /keep_alive` endpoint → prevents Supabase pause & keeps Render warm
+## 📊 Metrics & Observability
 
-## 🚀 Deployment Pipeline
-Fully automated Continuous Deployment:
-1. Push to `master` → GitHub
-2. Vercel auto-deploys frontend (Edge Network)
-3. Render auto-builds new Docker image & restarts service
-4. Live in ~2 minutes
+Every request through the RAG pipeline is instrumented with `time.perf_counter()`:
+
+| Metric | What It Measures |
+|--------|------------------|
+| `extraction_ms` | Time for OCR/PDF text extraction |
+| `chunk_ms` | Time to split text into chunks |
+| `embedding_ms` | Time to generate MiniLM embeddings |
+| `index_ms` | Time to build FAISS index |
+| `query_embedding_ms` | Time to embed the query |
+| `retrieval_ms` | Time for FAISS Top-K search |
+| `llm_ms` | Time for Groq/Llama-3.3 inference |
+| `total_ms` | End-to-end pipeline latency |
+
+Access via `GET /metrics` endpoint (returns last 50 requests).
+
+## 🛡️ Security & Reliability
+1. **Docker Containerization**
+   Custom Dockerfile installs `tesseract-ocr` + `libtesseract-dev` as OS-level dependencies. Docker ensures consistent deployment across environments (local, Render, AWS) without manual system package management.
+2. **Gunicorn WSGI Server**
+   1 worker (memory-constrained free tier), 8 threads for concurrency, 120s timeout to accommodate the full OCR → RAG → LLM pipeline.
+3. **API Rate Limiting**
+   Flask-Limiter → 10 requests/minute for analysis, 20/minute for chatbot (protects free-tier backend).
+4. **CORS Hardening**
+   Whitelists only `https://docbrief.vercel.app` and `localhost:5173`.
+5. **Circuit Breaker Pattern**
+   If Groq API or RAG fails, the system returns mock data to prevent UI crashes. If RAG fails, it falls back to truncated text.
+6. **Health Endpoint**
+   `GET /health` returns service status for monitoring.
+
+## 🚀 Deployment
+
+- **Frontend**: Push to `master` → Vercel auto-deploys to Edge Network
+- **Backend**: Push to `master` → Render auto-builds Docker image & restarts service
+
+### What's NOT Implemented (Honesty Section)
+
+| Feature | Status | What Real Implementation Would Look Like |
+|---------|--------|------------------------------------------|
+| **CI/CD Pipeline** | ❌ Not implemented | GitHub Actions workflow with lint → test → build → deploy stages |
+| **Uptime Monitoring** | ❌ Not measured | UptimeRobot, Pingdom, or custom healthcheck polling with alerts |
+| **Automated Testing** | ❌ No test suite | pytest for backend, Vitest/Jest for frontend, integration tests |
+| **Supabase Keep-Alive** | ✅ Implemented | GitHub Actions daily cron pings Supabase to prevent 7-day pause |
 
 ## 📍 Workflows
 
-### Intelligent Extraction Pipeline (OCR Logic)
+### RAG Pipeline Flow (End-to-End)
 ```mermaid
 flowchart TD
-    %% Theme Styling
     classDef purple fill:#7e22ce,stroke:#581c87,stroke-width:2px,color:white;
     classDef white fill:#ffffff,stroke:#1f2937,stroke-width:2px,color:#1f2937;
     classDef black fill:#1f2937,stroke:#000000,stroke-width:2px,color:white;
 
-    %% Flow
     Start([📄 Incoming File]) --> Check{Is it PDF?}
     
-    %% PDF Path
     Check -- Yes --> PyPDF[📖 PyPDF2 Extraction]
-    PyPDF --> Clean[✨ Text Cleaning]
-
-    %% Image Path
-    Check -- No (Image) --> Opt1[🎨 Convert to Grayscale]
-    Opt1 --> Opt2[Vm Resize to 1200px Max]
+    Check -- No, Image --> Opt1[🎨 Convert to Grayscale]
+    Opt1 --> Opt2[📏 Resize to 1200px Max]
     Opt2 --> OCR[👁️ Tesseract OCR Engine]
-    OCR --> Clean
+    
+    PyPDF & OCR --> Raw[📝 Raw Text]
+    Raw --> Chunk[✂️ Chunk Text: 500c / 50 overlap]
+    Chunk --> Embed[🔢 MiniLM-L6-v2 Embeddings]
+    Embed --> Index[📦 FAISS IndexFlatIP]
+    Index --> Retrieve[🔍 Top-K Cosine Retrieval]
+    Retrieve --> Context[📋 Retrieved Context Only]
+    Context --> LLM[🧠 Llama 3.3 via Groq]
+    LLM --> Output([📊 Structured JSON])
 
-    %% Final
-    Clean --> JSON[📝 JSON Payload]
-    JSON --> End([🚀 Ready for AI Analysis])
-
-    %% Styles
-    class Start,Check,Clean,JSON white;
-    class PyPDF,Opt1,Opt2,OCR purple;
-    class End black;
+    class Start,Check,Raw white;
+    class Opt1,Opt2,OCR,PyPDF,Chunk,Embed,Index,Retrieve,Context purple;
+    class LLM,Output black;
 ```
 
-### Automated Maintenance & Keep-Alive Flow
+### Automated Keep-Alive Flow
 
 ```mermaid
 sequenceDiagram
-    %% Theme Configuration
-    %% Note: Sequence diagrams use specific config objects or themes, 
-    %% but we can simulate the look via actor colors in some renderers.
-    
-    participant GH as 🐙 GitHub Actions (Cron)
-    participant BE as ⚙️ Render Backend
+    participant GH as 🐙 GitHub Actions Cron
     participant DB as 🗄️ Supabase DB
 
-    Note over GH: Every 24 Hours (Midnight UTC)
+    Note over GH: Every 24 Hours at Midnight UTC
     
-    GH->>BE: GET /keep_alive
-    activate BE
-    Note right of BE: Wakes up Free Tier Server
-    
-    BE->>DB: SELECT id FROM documents LIMIT 1
+    GH->>DB: GET /rest/v1/documents?select=id&limit=1
     activate DB
     Note right of DB: Resets 7-Day Inactivity Timer
     
-    DB-->>BE: 200 OK (Row Found)
+    DB-->>GH: 200 OK
     deactivate DB
-    
-    BE-->>GH: 200 OK (Status: Alive)
-    deactivate BE
 ```
 
 ## 📂 Directory Structure
 ```bash
 DocBrief/
-├── frontend/ (Root for Vercel)
+├── Frontend/               # React SPA (Vercel)
 │   ├── src/
-│   │   ├── components/ (AnalyticsWidget, Chatbot, etc.)
-│   │   ├── pages/ (Home, Work, Share)
-│   │   ├── apiConfig.js (Dynamic URL logic)
+│   │   ├── components/     # AnalyticsWidget, Chatbot, Work, etc.
+│   │   ├── apiConfig.js    # Dynamic API URL
 │   │   └── supabaseClient.js
 │   └── package.json
 │
-│── app.py (Main Flask Application)
-│── Dockerfile (Container Config)
-│── requirements.txt (Python Dependencies)
-│── .env (Secrets - Not committed)
+├── app.py                  # Flask API (RAG-integrated endpoints)
+├── rag_engine.py           # RAG module (chunking, embedding, FAISS, retrieval)
+├── Dockerfile              # Container config (Tesseract + Python deps)
+├── requirements.txt        # Python dependencies
+├── .env                    # Secrets (not committed)
 └── .github/workflows/
-    └── keep-alive.yml (Automation)
+    └── keep-alive.yml      # Supabase daily ping
 ```
 
 ## 🚀 Getting Started 
-
-Want to run DocBrief v2.0 on your machine? Follow these steps:
 
 ### Prerequisites
 - Node.js ≥ 18
@@ -260,24 +308,30 @@ cd docbrief
 ### Step 2: Backend Setup
 
 ```bash
-cd backend
-cp .env
+pip install -r requirements.txt
 ```
-Required variables in .env:
 
+Required variables in `.env`:
 ```bash
 GROQ_API_KEY=your_groq_api_key_here
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your_anon_public_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key  # Keep this secret!
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 FLASK_ENV=development
 ```
+
 ### Step 3: Frontend Setup
 
 ```bash
-cd ../frontend
+cd Frontend
 npm install
 npm run dev
+```
+
+### Step 4: Run with Docker (Recommended)
+```bash
+docker build -t docbrief .
+docker run -p 5000:5000 --env-file .env docbrief
 ```
 
 <div align="center">

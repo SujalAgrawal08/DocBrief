@@ -1,26 +1,34 @@
-name: Supabase Keep Alive
+name: Dual Keep-Alive (Backend + Supabase)
 
 on:
   schedule:
-    # Runs at 00:00 UTC every day (Safe buffer before 7 days)
-    - cron: '0 0 * * *'
-  workflow_dispatch: # Allows you to run this manually from the Actions tab for testing
+    # Runs every 14 minutes.
+    # Why 14 mins? Render free tier spins down after 15 mins of inactivity.
+    # By hitting the backend every 14 mins, we keep Render awake AND
+    # the backend hits Supabase, keeping the database awake too.
+    - cron: '*/14 * * * *'
+  workflow_dispatch: # Allows manual trigger from Actions tab
 
 jobs:
-  ping_supabase:
+  ping_backend:
     runs-on: ubuntu-latest
     steps:
-      - name: Wake up Supabase
+      - name: Ping Backend Keep-Alive Endpoint
         run: |
-          # We request just 1 row (limit=1) to minimize load, but enough to wake the DB
-          response=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/documents?select=id&limit=1" \
-            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}")
+          # Replace this URL with your actual production backend URL
+          # E.g., https://docbrief-backend.onrender.com/keep-alive
+          BACKEND_URL="https://docbrief-backend.onrender.com/keep-alive"
           
-          echo "Supabase responded with status: $response"
+          echo "Pinging backend at $BACKEND_URL..."
           
-          if [ "$response" -ne 200 ]; then
-            echo "Failed to wake up Supabase"
+          # -s: silent, -f: fail silently on HTTP errors so curl returns non-zero, --max-time: timeout
+          response=$(curl -s -f --max-time 10 "$BACKEND_URL")
+          
+          # The backend will return a JSON indicating if both it and Supabase are awake
+          echo "Backend Response: $response"
+          
+          # If curl failed
+          if [ $? -ne 0 ]; then
+            echo "Failed to reach backend."
             exit 1
           fi

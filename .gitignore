@@ -24,3 +24,13 @@ Thumbs.db
 
 # === VS Code Settings (Optional) ===
 .vscode/
+
+# === Antigravity / AI Artifacts ===
+implementation_plan.md
+UPGRADE_REPORT.md
+INTERVIEW_CHEAT_SHEET.md
+
+# === Testing / Temporary Files ===
+test_rag.py
+test_doc.txt
+uploads/

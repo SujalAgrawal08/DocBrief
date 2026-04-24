@@ -71,19 +71,16 @@ const AnalyticsWidget = ({ documents }) => {
           label="Documents Processed"
           value={stats.totalDocs}
           icon={FileText}
-          trend="+12%"
         />
         <StatCard
-          label="Hours Saved"
+          label="Estimated Reading Time Saved"
           value={stats.timeDisplay}
           icon={Clock}
-          trend="High Efficiency"
         />
         <StatCard
           label="Clauses Extracted"
           value={stats.totalClauses}
           icon={Zap}
-          trend="AI Accuracy"
         />
       </div>
 
