@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from typing import Optional
 from flask_cors import CORS
 from groq import Groq
 import os
@@ -114,7 +115,7 @@ def _build_analysis_prompt(context: str) -> str:
     """
 
 
-def _call_groq(prompt: str) -> str | None:
+def _call_groq(prompt: str) -> Optional[str]:
     """Send a prompt to Groq (Llama 3.3) and return raw response."""
     try:
         chat_completion = client.chat.completions.create(
@@ -131,7 +132,7 @@ def _call_groq(prompt: str) -> str | None:
         return None
 
 
-def analyze_with_groq(context: str) -> str | None:
+def analyze_with_groq(context: str) -> Optional[str]:
     """Convenience wrapper for backward compatibility."""
     return _call_groq(_build_analysis_prompt(context))
 
