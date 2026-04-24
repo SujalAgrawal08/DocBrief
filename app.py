@@ -225,6 +225,16 @@ def rag_llm_analysis(text: str) -> dict:
 # ENDPOINTS
 # ---------------------------------------------------------------------------
 
+@app.route('/', methods=['GET'])
+def index():
+    """Root endpoint to show the server is running."""
+    return jsonify({
+        "name": "DocBrief API",
+        "status": "online",
+        "endpoints": ["/health", "/keep-alive", "/extract_text", "/analyze_document", "/chatbot"]
+    })
+
+
 @app.route('/health', methods=['GET'])
 def health():
     """Simple healthcheck endpoint."""

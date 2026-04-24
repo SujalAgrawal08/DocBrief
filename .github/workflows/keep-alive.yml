@@ -22,7 +22,8 @@ jobs:
           echo "Pinging backend at $BACKEND_URL..."
           
           # -s: silent, -f: fail silently on HTTP errors so curl returns non-zero, --max-time: timeout
-          response=$(curl -s -f --max-time 10 "$BACKEND_URL")
+          # We set max-time to 120 seconds because Render cold starts can take up to 60 seconds.
+          response=$(curl -s -f --max-time 120 "$BACKEND_URL")
           
           # The backend will return a JSON indicating if both it and Supabase are awake
           echo "Backend Response: $response"
