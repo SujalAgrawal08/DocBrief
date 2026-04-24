@@ -16,8 +16,8 @@ jobs:
       - name: Ping Backend Keep-Alive Endpoint
         run: |
           # Replace this URL with your actual production backend URL
-          # E.g., https://docbrief-backend.onrender.com/keep-alive
-          BACKEND_URL="https://docbrief-backend.onrender.com/keep-alive"
+          # E.g., https://docbrief-server.onrender.com/keep-alive
+          BACKEND_URL="https://docbrief-server.onrender.com/keep-alive"
           
           echo "Pinging backend at $BACKEND_URL..."
           
