@@ -17,7 +17,7 @@ jobs:
         run: |
           # Replace this URL with your actual production backend URL
           # E.g., https://docbrief-server.onrender.com/keep-alive
-          BACKEND_URL="https://docbrief-server.onrender.com/keep-alive"
+          BACKEND_URL="https://docbrief-server.onrender.com/"
           
           echo "Pinging backend at $BACKEND_URL..."
           
