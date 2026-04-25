@@ -193,7 +193,8 @@ Every request through the RAG pipeline is instrumented with `time.perf_counter()
 | `llm_ms` | Time for Groq/Llama-3.3 inference |
 | `total_ms` | End-to-end pipeline latency |
 
-Access via `GET /metrics` endpoint (returns last 50 requests).
+**A/B Pipeline Comparison (RAG vs Baseline)**
+We concurrently run a full-context baseline against the RAG pipeline to measure exact latency and cost reduction percentages. Access these live statistics via the `GET /compare_pipelines` endpoint (returns a rolling window of the last 50 requests).
 
 ## 🛡️ Security & Reliability
 1. **Docker Containerization**
@@ -221,7 +222,7 @@ Access via `GET /metrics` endpoint (returns last 50 requests).
 | **CI/CD Pipeline** | ❌ Not implemented | GitHub Actions workflow with lint → test → build → deploy stages |
 | **Uptime Monitoring** | ❌ Not measured | UptimeRobot, Pingdom, or custom healthcheck polling with alerts |
 | **Automated Testing** | ❌ No test suite | pytest for backend, Vitest/Jest for frontend, integration tests |
-| **Supabase Keep-Alive** | ✅ Implemented | GitHub Actions daily cron pings Supabase to prevent 7-day pause |
+| **Dual Keep-Alive** | ✅ Implemented | GitHub Actions hits Render backend every 14 mins, which then pings Supabase (prevents both Render cold-starts and DB pauses) |
 
 ## 📍 Workflows
 
@@ -253,21 +254,28 @@ flowchart TD
     class LLM,Output black;
 ```
 
-### Automated Keep-Alive Flow
+### Automated Dual Keep-Alive Flow
 
 ```mermaid
 sequenceDiagram
     participant GH as 🐙 GitHub Actions Cron
+    participant API as ⚙️ Render Backend
     participant DB as 🗄️ Supabase DB
 
-    Note over GH: Every 24 Hours at Midnight UTC
+    Note over GH: Every 14 Minutes
     
-    GH->>DB: GET /rest/v1/documents?select=id&limit=1
+    GH->>API: GET /keep-alive
+    activate API
+    Note right of API: Prevents 15-min Render sleep
+    
+    API->>DB: GET /rest/v1/documents?select=id&limit=1
     activate DB
-    Note right of DB: Resets 7-Day Inactivity Timer
-    
-    DB-->>GH: 200 OK
+    Note right of DB: Resets 7-Day DB Inactivity Timer
+    DB-->>API: 200 OK
     deactivate DB
+    
+    API-->>GH: 200 OK
+    deactivate API
 ```
 
 ## 📂 Directory Structure
@@ -315,7 +323,7 @@ Required variables in `.env`:
 ```bash
 GROQ_API_KEY=your_groq_api_key_here
 SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your_anon_public_key
+SUPABASE_KEY=your_anon_public_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 FLASK_ENV=development
 ```
